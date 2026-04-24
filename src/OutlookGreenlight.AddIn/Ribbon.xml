@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<customUI xmlns="http://schemas.microsoft.com/office/2009/07/customui" onLoad="OnRibbonLoad">
+  <ribbon>
+    <tabs>
+      <tab idMso="TabAppointment">
+        <group id="greenlightGroup"
+               getLabel="OnGetGroupLabel"
+               insertAfterMso="GroupSchedule">
+          <button id="insertGreenlightButton"
+                  getLabel="OnGetButtonLabel"
+                  getSupertip="OnGetButtonSupertip"
+                  imageMso="TeamMeeting"
+                  size="large"
+                  onAction="OnInsertGreenlightLink" />
+        </group>
+      </tab>
+      <tab idMso="TabAppointmentScheduling">
+        <group id="greenlightGroupMeeting"
+               getLabel="OnGetGroupLabel"
+               insertAfterMso="GroupAppointmentMeetingTools">
+          <button id="insertGreenlightButtonMeeting"
+                  getLabel="OnGetButtonLabel"
+                  getSupertip="OnGetButtonSupertip"
+                  imageMso="TeamMeeting"
+                  size="large"
+                  onAction="OnInsertGreenlightLink" />
+        </group>
+      </tab>
+    </tabs>
+  </ribbon>
+</customUI>

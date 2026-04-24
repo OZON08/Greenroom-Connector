@@ -1,0 +1,37 @@
+# Build output
+.vs/
+[Bb]in/
+[Oo]bj/
+artifacts/
+
+# VS user files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# NuGet
+packages/
+*.nupkg
+project.lock.json
+project.fragment.lock.json
+
+# VSTO signing
+*_TemporaryKey.pfx
+*.snk
+
+# WiX intermediate
+*.wixobj
+*.wixpdb
+*.wixlib
+
+# Rider / ReSharper
+.idea/
+*.DotSettings.user
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Claude Code per-user overrides (shared settings.json is fine to commit)
+.claude/settings.local.json

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
+     xmlns:util="http://wixtoolset.org/schemas/v4/wxs/util">
+
+  <Package Name="Outlook Integration for Greenlight"
+           Manufacturer="Greenlight"
+           Version="1.0.0.0"
+           UpgradeCode="A1B2C3D4-9000-4000-8000-000000000001"
+           Scope="perMachine"
+           Compressed="yes">
+
+    <SummaryInformation Description="Outlook Integration for Greenlight / BigBlueButton" />
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+
+    <MediaTemplate EmbedCab="yes" />
+
+    <!-- Public properties exposed for silent install:
+           msiexec /i OutlookGreenlight.msi /qn
+             GREENLIGHTURL=https://bbb.example.com
+             LANGUAGE=auto
+    -->
+    <Property Id="GREENLIGHTURL" Secure="yes" />
+    <Property Id="LANGUAGE" Value="auto" Secure="yes" />
+
+    <!-- Require GREENLIGHTURL at install time (skippable for repair via REINSTALLMODE). -->
+    <Launch Condition="GREENLIGHTURL OR Installed"
+            Message="GREENLIGHTURL property is required. Example: msiexec /i OutlookGreenlight.msi /qn GREENLIGHTURL=https://bbb.example.com" />
+
+    <StandardDirectory Id="ProgramFiles64Folder">
+      <Directory Id="INSTALLFOLDER" Name="Greenlight Outlook Integration" />
+    </StandardDirectory>
+
+    <Feature Id="Main" Title="Outlook Integration for Greenlight" Level="1">
+      <ComponentGroupRef Id="ProductComponents" />
+      <ComponentGroupRef Id="RegistryComponents" />
+      <ComponentGroupRef Id="OutlookAddinComponents" />
+    </Feature>
+
+  </Package>
+
+  <!-- Add-in binaries: file harvesting is done via ProjectReference output groups.
+       The $(var.OutlookGreenlight.AddIn.TargetDir) variable is provided by the wixproj
+       ProjectReference; here we enumerate the VSTO artifacts explicitly to stay robust. -->
+  <Fragment>
+    <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+      <Component Id="AddInAssembly" Guid="A1B2C3D4-A001-4000-8000-000000000001">
+        <File Id="AddInDll"
+              Source="$(var.OutlookGreenlight.AddIn.TargetPath)"
+              KeyPath="yes" />
+      </Component>
+      <Component Id="AddInConfig" Guid="A1B2C3D4-A001-4000-8000-000000000002">
+        <File Id="AddInConfigFile"
+              Source="$(var.OutlookGreenlight.AddIn.TargetDir)OutlookGreenlight.AddIn.dll.config"
+              KeyPath="yes" />
+      </Component>
+      <Component Id="AddInVstoManifest" Guid="A1B2C3D4-A001-4000-8000-000000000003">
+        <File Id="AddInVstoFile"
+              Source="$(var.OutlookGreenlight.AddIn.TargetDir)OutlookGreenlight.AddIn.vsto"
+              KeyPath="yes" />
+      </Component>
+      <Component Id="AddInDllManifest" Guid="A1B2C3D4-A001-4000-8000-000000000004">
+        <File Id="AddInDllManifestFile"
+              Source="$(var.OutlookGreenlight.AddIn.TargetDir)OutlookGreenlight.AddIn.dll.manifest"
+              KeyPath="yes" />
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+
+</Wix>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+
+  <!-- Per-machine settings written from MSI public properties.
+       Users should NOT edit these keys directly. HKCU is used only for per-user
+       session data (cookie cache), written by the add-in at runtime. -->
+  <Fragment>
+    <ComponentGroup Id="RegistryComponents" Directory="INSTALLFOLDER">
+      <Component Id="AppSettingsRegistry" Guid="A1B2C3D4-B001-4000-8000-000000000001">
+        <RegistryKey Root="HKLM" Key="SOFTWARE\Greenlight\OutlookIntegration">
+          <RegistryValue Type="string" Name="GreenlightUrl" Value="[GREENLIGHTURL]" />
+          <RegistryValue Type="string" Name="Language" Value="[LANGUAGE]" />
+          <RegistryValue Type="string" Name="InstallDir" Value="[INSTALLFOLDER]" KeyPath="yes" />
+          <RegistryValue Type="string" Name="Version" Value="[ProductVersion]" />
+        </RegistryKey>
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+
+</Wix>
