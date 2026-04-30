@@ -1,7 +1,7 @@
 # Development setup
 
 How to build, debug and test the Outlook add-in locally against a real Greenlight
-server (e.g. `https://meet.wald.rlp.de`).
+server (e.g. `http://localhost:3000`).
 
 ## Prerequisites
 
@@ -30,7 +30,7 @@ If the Office workload is missing: Visual Studio Installer → *Modify* → tick
 
 You can develop against either:
 
-- a **remote Greenlight** (e.g. `https://meet.wald.rlp.de`) — fastest if you
+- a **remote Greenlight** (e.g. `http://localhost:3000`) — fastest if you
   already have an account there, or
 - a **local Greenlight + Keycloak stack** via Docker — useful for offline
   work, breaking changes, or testing edge cases. See
@@ -104,16 +104,6 @@ Event Viewer → *Windows Logs → Application* and file it with the failing ste
 For offline work or to test breaking changes, [compose/docker-compose.dev.yml](../compose/docker-compose.dev.yml)
 brings up Greenlight v3, Postgres, Redis and a pre-configured Keycloak realm.
 
-**One-time host setup** (admin PowerShell — needed once per machine):
-
-```powershell
-Add-Content -Path "$env:windir\System32\drivers\etc\hosts" -Value "`n127.0.0.1`tkeycloak"
-```
-
-Why: Keycloak signs OIDC tokens with the issuer URL. The browser and the
-Greenlight container must reach Keycloak under the same hostname so the
-issuer matches. Mapping `keycloak` to localhost lets both sides resolve it.
-
 **Bring the stack up:**
 
 ```powershell
@@ -134,7 +124,7 @@ First boot takes ~30–60s while Greenlight runs migrations.
 | What           | URL                          | Credentials            |
 | -------------- | ---------------------------- | ---------------------- |
 | Greenlight     | <http://localhost:3000>      | login via Keycloak SSO |
-| Keycloak admin | <http://keycloak:8080>       | `admin` / `admin`      |
+| Keycloak admin | <http://localhost:8080>      | `admin` / `admin`      |
 | Keycloak realm | `greenlight` (auto-imported) | —                      |
 
 Pre-seeded test users (defined in
@@ -142,6 +132,14 @@ Pre-seeded test users (defined in
 
 - `test@example.com` / `test123`
 - `alice@example.com` / `alice123`
+
+**How OIDC works without a hosts-file edit:** Keycloak signs tokens with
+issuer `http://localhost:8080/...`, which the browser resolves natively.
+Greenlight (in the container) reaches Keycloak via the Docker DNS name
+`keycloak`. A mounted [omniauth.rb override](../compose/greenlight/omniauth.rb)
+splits the OIDC config so the authorization endpoint uses `localhost` while
+token, userinfo and JWKS calls go through the bridge network. The token
+`iss` claim still equals the configured issuer, so validation passes.
 
 **Caveats:**
 
@@ -151,6 +149,9 @@ Pre-seeded test users (defined in
 - Initial Greenlight signup via Keycloak creates the user in Greenlight's DB
   on first login. They get no rooms by default — create one in the Greenlight
   UI before testing the room picker.
+- If you previously hit the stack while it was redirecting HTTP→HTTPS, your
+  browser cached the 301 redirect. Use a fresh incognito window or clear
+  the cache for `localhost:3000`.
 
 **Wipe everything (volumes included):**
 
@@ -177,7 +178,7 @@ live, authenticated session:
 
 ```cmd
 msiexec /i OutlookGreenlight.msi /qn ^
-    GREENLIGHTURL=https://meet.wald.rlp.de ^
+    GREENLIGHTURL=http://localhost:3000 ^
     LANGUAGE=auto
 ```
 

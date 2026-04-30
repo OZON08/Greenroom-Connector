@@ -10,7 +10,7 @@
 
 [CmdletBinding()]
 param(
-    [string]$GreenlightUrl = 'https://meet.wald.rlp.de',
+    [string]$GreenlightUrl = 'http://localhost:3000',
     [ValidateSet('auto','de','en')]
     [string]$Language = 'auto',
     [switch]$Remove
