@@ -111,6 +111,11 @@ services:
       # accepts separate browser-facing and backend-facing OIDC URLs, so we
       # don't need a hosts-file edit on the dev machine.
       - ./greenlight/omniauth.rb:/usr/src/app/config/initializers/omniauth.rb:ro
+      # Dev override: drop the Secure flag on the session cookie so the
+      # browser stores it over plain HTTP. Without this the session cookie
+      # is dropped, no CSRF token is associated with the user, and the
+      # OmniAuth form submit fails with InvalidAuthenticityToken.
+      - ./greenlight/session_store.rb:/usr/src/app/config/initializers/session_store.rb:ro
     networks: [glnet]
 
 volumes:
