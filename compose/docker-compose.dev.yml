@@ -88,10 +88,13 @@ services:
       OPENID_CONNECT_REDIRECT: http://localhost:3000
       OMNIAUTH_BUTTON_TEXT: Sign in with Keycloak (dev)
       DEFAULT_LOCALE: de
-      ENABLE_SSL: "false"
       RAILS_LOG_TO_STDOUT: "true"
     ports:
       - "3000:3000"
+    volumes:
+      # Dev override: Greenlight v3 hardcodes config.force_ssl = true, which
+      # breaks plain HTTP access. This initializer flips it back off.
+      - ./greenlight/zz_disable_force_ssl.rb:/usr/src/app/config/initializers/zz_disable_force_ssl.rb:ro
     networks: [glnet]
 
 volumes:
