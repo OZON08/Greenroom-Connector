@@ -26,15 +26,25 @@ Get-ItemProperty 'HKLM:\SOFTWARE\WOW6432Node\Microsoft\EdgeUpdate\Clients\{F3017
 If the Office workload is missing: Visual Studio Installer → *Modify* → tick
 **Office/SharePoint development**.
 
-## 1. Write the dev registry config
+## 1. Pick a Greenlight target
+
+You can develop against either:
+
+- a **remote Greenlight** (e.g. `https://meet.wald.rlp.de`) — fastest if you
+  already have an account there, or
+- a **local Greenlight + Keycloak stack** via Docker — useful for offline
+  work, breaking changes, or testing edge cases. See
+  [Local stack via Docker Compose](#local-stack-via-docker-compose) below.
+
+## 2. Write the dev registry config
 
 The add-in reads its server URL and language from `HKLM`. At install time the
 MSI writes these; for local development run the script manually from an
 **elevated** PowerShell:
 
 ```powershell
-.\scripts\Set-DevRegistry.ps1
-# or with a different server:
+.\scripts\Set-DevRegistry.ps1                                        # default: meet.wald.rlp.de
+.\scripts\Set-DevRegistry.ps1 -GreenlightUrl http://localhost:3000   # local stack
 .\scripts\Set-DevRegistry.ps1 -GreenlightUrl https://other.example.com -Language de
 ```
 
@@ -44,7 +54,7 @@ To tear it down later:
 .\scripts\Set-DevRegistry.ps1 -Remove
 ```
 
-## 2. Build and debug
+## 3. Build and debug
 
 ```powershell
 start .\OutlookGreenlight.sln
@@ -64,7 +74,7 @@ needed for the F5 loop.
 If Outlook shows a "publisher not verified" warning, click **Install** — the
 binaries are currently unsigned. Code signing will be added later.
 
-## 3. First test
+## 4. First test
 
 1. In Outlook, create a **new appointment**
 2. On the *Appointment* ribbon you should see a group **Greenlight** with the
@@ -77,7 +87,7 @@ binaries are currently unsigned. Code signing will be added later.
 8. The appointment body now contains an "Online beitreten" / "Join online"
    link, and the *Location* field is filled with the join URL
 
-## 4. What to verify (smoke checklist)
+## 5. What to verify (smoke checklist)
 
 | Observation | Verifies |
 |---|---|
@@ -88,6 +98,65 @@ binaries are currently unsigned. Code signing will be added later.
 
 If anything misfires, grab the stack trace from VS *Debug → Output* or from
 Event Viewer → *Windows Logs → Application* and file it with the failing step.
+
+## Local stack via Docker Compose
+
+For offline work or to test breaking changes, [compose/docker-compose.dev.yml](../compose/docker-compose.dev.yml)
+brings up Greenlight v3, Postgres, Redis and a pre-configured Keycloak realm.
+
+**One-time host setup** (admin PowerShell — needed once per machine):
+
+```powershell
+Add-Content -Path "$env:windir\System32\drivers\etc\hosts" -Value "`n127.0.0.1`tkeycloak"
+```
+
+Why: Keycloak signs OIDC tokens with the issuer URL. The browser and the
+Greenlight container must reach Keycloak under the same hostname so the
+issuer matches. Mapping `keycloak` to localhost lets both sides resolve it.
+
+**Bring the stack up:**
+
+```powershell
+docker compose -f compose/docker-compose.dev.yml up -d
+docker compose -f compose/docker-compose.dev.yml logs -f greenlight   # wait for migrations + boot
+```
+
+First boot takes ~30–60s while Greenlight runs migrations.
+
+**Point the add-in at the local stack:**
+
+```powershell
+.\scripts\Set-DevRegistry.ps1 -GreenlightUrl http://localhost:3000
+```
+
+**Endpoints:**
+
+| What           | URL                          | Credentials            |
+| -------------- | ---------------------------- | ---------------------- |
+| Greenlight     | <http://localhost:3000>      | login via Keycloak SSO |
+| Keycloak admin | <http://keycloak:8080>       | `admin` / `admin`      |
+| Keycloak realm | `greenlight` (auto-imported) | —                      |
+
+Pre-seeded test users (defined in
+[compose/keycloak/greenlight-realm.json](../compose/keycloak/greenlight-realm.json)):
+
+- `test@example.com` / `test123`
+- `alice@example.com` / `alice123`
+
+**Caveats:**
+
+- No real BBB server. Listing rooms works; actually starting a meeting will
+  fail (the join URL points at `localhost:3000/rooms/<id>` which BBB can't
+  reach). That is fine for testing the add-in.
+- Initial Greenlight signup via Keycloak creates the user in Greenlight's DB
+  on first login. They get no rooms by default — create one in the Greenlight
+  UI before testing the room picker.
+
+**Wipe everything (volumes included):**
+
+```powershell
+docker compose -f compose/docker-compose.dev.yml down -v
+```
 
 ## Known unknowns (until first real login)
 

@@ -1,0 +1,103 @@
+# Local Greenlight v3 + Keycloak stack for testing the Outlook add-in.
+#
+# Quick start (PowerShell, from repo root):
+#   1. Add this line to C:\Windows\System32\drivers\etc\hosts (admin):
+#         127.0.0.1   keycloak
+#      Reason: Keycloak issues OIDC tokens with the issuer URL. Greenlight
+#      (in a container) must reach Keycloak under the same hostname the
+#      browser sees, otherwise the issuer mismatch breaks token validation.
+#   2. docker compose -f compose/docker-compose.dev.yml up -d
+#   3. .\scripts\Set-DevRegistry.ps1 -GreenlightUrl http://localhost:3000
+#   4. F5 in Visual Studio. Login with test@example.com / test123.
+#
+# Wipe everything:  docker compose -f compose/docker-compose.dev.yml down -v
+#
+# This stack does NOT include a real BBB server. The room list will work,
+# but actually starting a meeting will fail. That is fine for testing the
+# add-in (which only inserts join links).
+
+services:
+  postgres:
+    image: postgres:14-alpine
+    container_name: gl-postgres
+    environment:
+      POSTGRES_DB: greenlight_v3_production
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: dev-postgres-password
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d greenlight_v3_production"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks: [glnet]
+
+  redis:
+    image: redis:7-alpine
+    container_name: gl-redis
+    volumes:
+      - redis-data:/data
+    networks: [glnet]
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:24.0
+    container_name: gl-keycloak
+    command: ["start-dev", "--import-realm"]
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      # KC_HOSTNAME must match what BOTH the browser and the Greenlight
+      # container use. With the hosts-file alias above, both resolve to
+      # the same Keycloak instance and the issuer in tokens is consistent.
+      KC_HOSTNAME: keycloak
+      KC_HOSTNAME_STRICT_BACKCHANNEL: "false"
+      KC_HTTP_ENABLED: "true"
+      KC_HEALTH_ENABLED: "true"
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./keycloak:/opt/keycloak/data/import:ro
+    networks:
+      glnet:
+        aliases: [keycloak]
+
+  greenlight:
+    image: bigbluebutton/greenlight:v3
+    container_name: gl-app
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      keycloak:
+        condition: service_started
+    environment:
+      DATABASE_URL: postgres://postgres:dev-postgres-password@postgres:5432/greenlight_v3_production
+      REDIS_URL: redis://redis:6379
+      # Dev-only fixed key (NOT for production). Generate a real one with
+      # `bin/rails secret` before exposing this stack to anything real.
+      SECRET_KEY_BASE: 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+      RELATIVE_URL_ROOT: /
+      # No real BBB. Joining a meeting will fail; listing rooms works.
+      BIGBLUEBUTTON_ENDPOINT: https://test.bigbluebutton.org/bigbluebutton/
+      BIGBLUEBUTTON_SECRET: 8cd8ef52e8e101574e400365b55e11a6
+      OPENID_CONNECT_CLIENT_ID: greenlight
+      OPENID_CONNECT_CLIENT_SECRET: greenlight-dev-secret
+      OPENID_CONNECT_ISSUER: http://keycloak:8080/realms/greenlight
+      OPENID_CONNECT_REDIRECT: http://localhost:3000
+      OMNIAUTH_BUTTON_TEXT: Sign in with Keycloak (dev)
+      DEFAULT_LOCALE: de
+      ENABLE_SSL: "false"
+      RAILS_LOG_TO_STDOUT: "true"
+    ports:
+      - "3000:3000"
+    networks: [glnet]
+
+volumes:
+  postgres-data:
+  redis-data:
+
+networks:
+  glnet:
+    driver: bridge
