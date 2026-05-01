@@ -57,17 +57,17 @@ To tear it down later:
 ## 3. Build and debug
 
 ```powershell
-start .\OutlookGreenlight.sln
+start .\GreenroomConnector.sln
 ```
 
 In Visual Studio:
 
 1. Right-click the solution → **Restore NuGet Packages**
-2. Right-click **OutlookGreenlight.AddIn** → **Set as Startup Project**
+2. Right-click **GreenroomConnector** → **Set as Startup Project**
 3. **F5**
 
 VSTO registers the add-in automatically under
-`HKCU\Software\Microsoft\Office\Outlook\Addins\OutlookGreenlight.AddIn` while
+`HKCU\Software\Microsoft\Office\Outlook\Addins\GreenroomConnector` while
 debugging and unregisters it when VS closes. No manual add-in registration is
 needed for the F5 loop.
 
@@ -169,7 +169,7 @@ live, authenticated session:
   redirect to Keycloak, that path differs on your instance.
 - **Extended-session cookie** (`_extended_session`): Greenlight's "remember me".
   If Keycloak sets it, we may need to capture it alongside the main session
-  cookie in [LoginWindow.cs](../src/OutlookGreenlight.AddIn/UI/LoginWindow.cs).
+  cookie in [LoginWindow.cs](../src/GreenroomConnector/UI/LoginWindow.cs).
 - **Real response shape of `/api/v1/rooms.json`**: the parser expects
   `{"data":[...], "meta":{}}` with fields `id`, `name`, `friendly_id`,
   `online`, `participants`, `last_session`, optional `shared_owner`.
@@ -177,7 +177,7 @@ live, authenticated session:
 ## Silent install (MSI, once the installer project builds)
 
 ```cmd
-msiexec /i OutlookGreenlight.msi /qn ^
+msiexec /i GreenroomConnector.msi /qn ^
     GREENLIGHTURL=http://localhost:3000 ^
     LANGUAGE=auto
 ```

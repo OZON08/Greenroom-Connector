@@ -4,6 +4,9 @@
 [Oo]bj/
 artifacts/
 
+# VS migration artifacts
+UpgradeLog*.htm
+
 # VS user files
 *.user
 *.suo

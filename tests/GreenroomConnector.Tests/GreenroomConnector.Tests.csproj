@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <LangVersion>8.0</LangVersion>
+    <RootNamespace>GreenroomConnector.Tests</RootNamespace>
+    <AssemblyName>GreenroomConnector.Tests</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
+    <PackageReference Include="xunit" Version="2.6.6" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.5.6">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <!-- Note: We don't reference the VSTO add-in project here because pulling in
+       Office interop assemblies into a test runner is painful. Tests target the
+       service layer by copying small, pure pieces or mirroring their logic.
+       For integration tests that must touch Outlook interop, use a separate
+       project marked [Collection] with manual execution. -->
+</Project>
