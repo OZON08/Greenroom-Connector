@@ -14,6 +14,8 @@ namespace GreenroomConnector.UI
         public RoomPickerForm()
         {
             InitializeComponent();
+            Icon = AppIcon.Load();
+            ShowIcon = true;
             Text = Strings.RoomPicker_Title;
             labelHeader.Text = Strings.RoomPicker_Header;
             buttonInsert.Text = Strings.RoomPicker_InsertButton;

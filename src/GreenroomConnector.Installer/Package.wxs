@@ -19,9 +19,22 @@
            msiexec /i GreenroomConnector.msi /qn
              GREENLIGHTURL=https://bbb.example.com
              LANGUAGE=auto
+             LOCATIONTEXT="BigBlueButton-Konferenz"
+             SHOWDIALIN=true
+             DIALINNUMBER="+49 30 1234 5678"
     -->
     <Property Id="GREENLIGHTURL" Secure="yes" />
     <Property Id="LANGUAGE" Value="auto" Secure="yes" />
+    <!-- Optional. Written into the appointment Location field when empty.
+         Supports the placeholder {room} which is replaced with the room name. -->
+    <Property Id="LOCATIONTEXT" Secure="yes" />
+    <!-- Toggle ("true"/"false") for the localized dial-in block defined in
+         Strings.Meeting_DialIn. The wrapping text lives in the resx; this
+         flag plus DIALINNUMBER below control content. Default: false. -->
+    <Property Id="SHOWDIALIN" Value="false" Secure="yes" />
+    <!-- Deployment-specific dial-in phone number, substituted into the
+         {number} placeholder of Strings.Meeting_DialIn. -->
+    <Property Id="DIALINNUMBER" Secure="yes" />
 
     <!-- Require GREENLIGHTURL at install time (skippable for repair via REINSTALLMODE). -->
     <Launch Condition="GREENLIGHTURL OR Installed"

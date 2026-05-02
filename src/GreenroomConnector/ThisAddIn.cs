@@ -20,7 +20,7 @@ namespace GreenroomConnector
             Settings = new SettingsProvider();
             Session = new SessionStore();
             Client = new GreenlightClient(Settings, Session);
-            Writer = new AppointmentWriter();
+            Writer = new AppointmentWriter(Settings);
 
             Localization.ApplyCulture(Settings.Language);
         }

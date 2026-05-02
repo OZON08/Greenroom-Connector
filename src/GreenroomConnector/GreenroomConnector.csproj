@@ -165,7 +165,9 @@
     <Compile Include="UI\LoginWindow.Designer.cs">
       <DependentUpon>LoginWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="Resources\AppIcon.cs" />
     <Compile Include="Resources\Localization.cs" />
+    <Compile Include="Resources\RibbonImageProvider.cs" />
     <Compile Include="Resources\Strings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -187,9 +189,12 @@
       <LastGenOutput>Strings.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources\Strings.de.resx" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="greenroom-connector-icon32x32.ico" />
+    <EmbeddedResource Include="Resources\AppIcon.ico">
+      <LogicalName>GreenroomConnector.Resources.AppIcon.ico</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\RibbonIcon.png">
+      <LogicalName>GreenroomConnector.Resources.RibbonIcon.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -205,7 +210,7 @@
     <ManifestCertificateThumbprint>7C1CF8795C31BA7C434FF9BA8D01721AE0B1A3B2</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>greenroom-connector-icon32x32.ico</ApplicationIcon>
+    <ApplicationIcon>Resources\AppIcon.ico</ApplicationIcon>
   </PropertyGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\OfficeTools\Microsoft.VisualStudio.Tools.Office.targets" Condition="'$(VSToolsPath)' != ''" />

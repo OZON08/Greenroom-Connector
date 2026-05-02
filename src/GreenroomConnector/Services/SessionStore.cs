@@ -7,7 +7,7 @@ namespace GreenroomConnector.Services
 {
     public class SessionStore
     {
-        private const string HkcuKey = @"Software\Greenlight\OutlookIntegration";
+        private const string HkcuKey = @"Software\GreenroomConnector";
         private const string CookieValueName = "SessionCookie";
         private const string ExpiryValueName = "SessionExpiresAt";
 

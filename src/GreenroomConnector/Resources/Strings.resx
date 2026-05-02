@@ -52,6 +52,9 @@
   <data name="Meeting_Header" xml:space="preserve"><value>BigBlueButton meeting</value></data>
   <data name="Meeting_Room" xml:space="preserve"><value>Room</value></data>
   <data name="Meeting_JoinLinkText" xml:space="preserve"><value>Join online</value></data>
+  <data name="Meeting_DialIn" xml:space="preserve"><value>Phone dial-in:
+Number: {number}
+The conference ID and PIN are shown when the meeting starts in BigBlueButton.</value></data>
 
   <data name="Error_NoAppointmentContext" xml:space="preserve"><value>This action must be used from an open appointment.</value></data>
   <data name="Error_NoGreenlightUrl" xml:space="preserve"><value>The Greenlight server URL is not configured. Please contact your administrator.</value></data>

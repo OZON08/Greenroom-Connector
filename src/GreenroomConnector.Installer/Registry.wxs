@@ -7,9 +7,12 @@
   <Fragment>
     <ComponentGroup Id="RegistryComponents" Directory="INSTALLFOLDER">
       <Component Id="AppSettingsRegistry" Guid="A1B2C3D4-B001-4000-8000-000000000001">
-        <RegistryKey Root="HKLM" Key="SOFTWARE\Greenlight\OutlookIntegration">
+        <RegistryKey Root="HKLM" Key="SOFTWARE\GreenroomConnector">
           <RegistryValue Type="string" Name="GreenlightUrl" Value="[GREENLIGHTURL]" />
           <RegistryValue Type="string" Name="Language" Value="[LANGUAGE]" />
+          <RegistryValue Type="string" Name="LocationText" Value="[LOCATIONTEXT]" />
+          <RegistryValue Type="string" Name="ShowDialIn" Value="[SHOWDIALIN]" />
+          <RegistryValue Type="string" Name="DialInNumber" Value="[DIALINNUMBER]" />
           <RegistryValue Type="string" Name="InstallDir" Value="[INSTALLFOLDER]" KeyPath="yes" />
           <RegistryValue Type="string" Name="Version" Value="[ProductVersion]" />
         </RegistryKey>

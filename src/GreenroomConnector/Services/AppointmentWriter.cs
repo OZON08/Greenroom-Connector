@@ -9,10 +9,17 @@ namespace GreenroomConnector.Services
 {
     public class AppointmentWriter
     {
-        // Writes the join link as plain text into the appointment body and into
-        // Location (when empty). Outlook auto-detects URLs in plain Body and
-        // renders them as clickable links — works for the organizer and for
-        // every recipient regardless of mail client.
+        private readonly SettingsProvider _settings;
+
+        public AppointmentWriter(SettingsProvider settings)
+        {
+            _settings = settings ?? throw new ArgumentNullException(nameof(settings));
+        }
+
+        // Writes the join link as plain text into the appointment body and a
+        // configurable label into Location (when empty). Outlook auto-detects
+        // URLs in plain Body and renders them as clickable links — works for
+        // the organizer and for every recipient regardless of mail client.
         //
         // We intentionally don't write HTMLBody. In Office 2024 / 365 classic
         // the IDispatch surface of a live AppointmentItem rejects HTMLBody
@@ -27,7 +34,10 @@ namespace GreenroomConnector.Services
 
             try
             {
-                WriteCore(appointment, room);
+                WriteCore(appointment, room,
+                    _settings.LocationText,
+                    _settings.ShowDialIn,
+                    _settings.DialInNumber);
                 Log("InsertMeetingLink OK for room " + (room.Name ?? room.FriendlyId));
             }
             catch (Exception ex)
@@ -38,24 +48,53 @@ namespace GreenroomConnector.Services
             }
         }
 
-        private static void WriteCore(object apt, Room room)
+        private static void WriteCore(object apt, Room room,
+            string locationTemplate, bool showDialIn, string dialInNumber)
         {
             string existing = SafeGetString(apt, "Body");
-            SetProperty(apt, "Body", BuildPlainBlock(room) + Environment.NewLine + existing);
+            SetProperty(apt, "Body",
+                BuildPlainBlock(room, showDialIn, dialInNumber) + Environment.NewLine + existing);
+
+            // Only fill Location if (a) admin configured a template AND
+            // (b) the user hasn't already typed something there.
+            if (string.IsNullOrWhiteSpace(locationTemplate)) return;
 
             string currentLocation = SafeGetString(apt, "Location");
-            if (string.IsNullOrWhiteSpace(currentLocation))
-                TrySetProperty(apt, "Location", room.JoinUrl);
+            if (!string.IsNullOrWhiteSpace(currentLocation)) return;
+
+            string locationText = ApplyTemplate(locationTemplate, room, dialInNumber);
+            TrySetProperty(apt, "Location", locationText);
         }
 
-        private static string BuildPlainBlock(Room room)
+        private static string BuildPlainBlock(Room room, bool showDialIn, string dialInNumber)
         {
-            return
-                "----------------------------------------" + Environment.NewLine +
-                Strings.Meeting_Header + Environment.NewLine +
-                Strings.Meeting_Room + ": " + (room.Name ?? room.FriendlyId) + Environment.NewLine +
-                Strings.Meeting_JoinLinkText + ": " + room.JoinUrl + Environment.NewLine +
-                "----------------------------------------" + Environment.NewLine;
+            var sb = new System.Text.StringBuilder();
+            sb.AppendLine("----------------------------------------");
+            sb.AppendLine(Strings.Meeting_Header);
+            sb.AppendLine(Strings.Meeting_Room + ": " + (room.Name ?? room.FriendlyId));
+            sb.AppendLine(Strings.Meeting_JoinLinkText + ": " + room.JoinUrl);
+
+            // Dial-in section only when admin enabled it AND a number is configured.
+            // Avoids printing a "Rufnummer:" line with no number behind it.
+            bool dialInPossible = showDialIn
+                && !string.IsNullOrWhiteSpace(dialInNumber)
+                && !string.IsNullOrWhiteSpace(Strings.Meeting_DialIn);
+            if (dialInPossible)
+            {
+                sb.AppendLine();
+                sb.AppendLine(ApplyTemplate(Strings.Meeting_DialIn, room, dialInNumber));
+            }
+
+            sb.AppendLine("----------------------------------------");
+            return sb.ToString();
+        }
+
+        private static string ApplyTemplate(string template, Room room, string dialInNumber)
+        {
+            string roomName = room.Name ?? room.FriendlyId ?? string.Empty;
+            return template
+                .Replace("{room}", roomName)
+                .Replace("{number}", dialInNumber ?? string.Empty);
         }
 
         private static object GetProperty(object com, string name)

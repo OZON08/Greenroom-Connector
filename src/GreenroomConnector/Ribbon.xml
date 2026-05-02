@@ -9,7 +9,7 @@
           <button id="insertGreenlightButton"
                   getLabel="OnGetButtonLabel"
                   getSupertip="OnGetButtonSupertip"
-                  imageMso="TeamMeeting"
+                  getImage="OnGetButtonImage"
                   size="large"
                   onAction="OnInsertGreenlightLink" />
         </group>
@@ -21,7 +21,7 @@
           <button id="insertGreenlightButtonMeeting"
                   getLabel="OnGetButtonLabel"
                   getSupertip="OnGetButtonSupertip"
-                  imageMso="TeamMeeting"
+                  getImage="OnGetButtonImage"
                   size="large"
                   onAction="OnInsertGreenlightLink" />
         </group>

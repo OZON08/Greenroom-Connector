@@ -33,6 +33,8 @@ namespace GreenroomConnector.UI
         {
             _greenlightUrl = greenlightUrl ?? throw new ArgumentNullException(nameof(greenlightUrl));
             InitializeComponent();
+            Icon = AppIcon.Load();
+            ShowIcon = true;
             Text = Strings.Login_Title;
         }
 

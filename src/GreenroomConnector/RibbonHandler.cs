@@ -1,4 +1,5 @@
 using System;
+using System.Drawing;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -7,6 +8,7 @@ using Microsoft.Office.Core;
 using GreenroomConnector.Resources;
 using GreenroomConnector.UI;
 using Outlook = Microsoft.Office.Interop.Outlook;
+using stdole;
 
 namespace GreenroomConnector
 {
@@ -33,6 +35,11 @@ namespace GreenroomConnector
         public string OnGetGroupLabel(IRibbonControl control) => Strings.Ribbon_GroupLabel;
         public string OnGetButtonLabel(IRibbonControl control) => Strings.Ribbon_ButtonLabel;
         public string OnGetButtonSupertip(IRibbonControl control) => Strings.Ribbon_ButtonSupertip;
+
+        // Office Ribbon getImage callback. Returns the embedded PNG as an
+        // IPictureDisp — the COM type the Office customUI expects. Bitmap
+        // alone works on some Office builds but IPictureDisp is the safe path.
+        public IPictureDisp OnGetButtonImage(IRibbonControl control) => RibbonImageProvider.Get();
 
         public void OnInsertGreenlightLink(IRibbonControl control)
         {
