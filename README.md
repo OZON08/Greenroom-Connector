@@ -139,7 +139,7 @@ say thanks:
   <a href="https://github.com/sponsors/OZON08">
     <img src="https://img.shields.io/badge/GitHub-Sponsors-EA4AAA?logo=github" alt="GitHub Sponsors" />
   </a>
-  <a href="https://www.buymeacoffee.com/ozon08">
+  <a href="https://www.buymeacoffee.com/ozon">
     <img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-FFDD00?logo=buymeacoffee&logoColor=000" alt="Buy Me a Coffee" />
   </a>
 </p>
