@@ -38,7 +38,7 @@ the attendee side.
 
 Ribbon button on a new appointment, room picker, and the resulting body block.
 
-> _Screenshots will be added once the first signed build is out._
+> *Screenshots will be added once the first signed build is out.*
 
 ## Features
 
@@ -133,6 +133,15 @@ bundled.
 ## Support the project
 
 If this add-in saves your team a couple of clicks per meeting and you want to
-say thanks, you can sponsor the project via
-[GitHub Sponsors](https://github.com/sponsors/OZON08). All sponsorships go
-straight to keeping the lights on for the integration work.
+say thanks:
+
+<p>
+  <a href="https://github.com/sponsors/OZON08">
+    <img src="https://img.shields.io/badge/GitHub-Sponsors-EA4AAA?logo=github" alt="GitHub Sponsors" />
+  </a>
+  <a href="https://www.buymeacoffee.com/ozon08">
+    <img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-FFDD00?logo=buymeacoffee&logoColor=000" alt="Buy Me a Coffee" />
+  </a>
+</p>
+
+All sponsorships go straight to keeping the lights on for the integration work.
