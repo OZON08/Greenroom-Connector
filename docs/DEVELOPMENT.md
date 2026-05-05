@@ -83,8 +83,8 @@ debug session and unregisters it when VS closes — no manual setup needed for
 the F5 loop.
 
 If Outlook shows a *"publisher not verified"* warning, click **Install**. The
-binaries are unsigned during dev. Code-signing will be added once a
-production-ready build pipeline lands.
+binaries are unsigned during dev — see [Release & code signing](#release--code-signing)
+for what production builds need.
 
 ## 4. First test
 
@@ -114,10 +114,20 @@ production-ready build pipeline lands.
 | `Location` shows your `LocationText`, not the URL | `LocationText` is read from HKLM and applied |
 | Dial-in section appears (or doesn't) per `ShowDialIn` flag | Toggle plumbing works, `{number}` substitution works |
 
-If anything misfires, the add-in writes verbose diagnostics to
-`%LOCALAPPDATA%\GreenroomConnector\debug.log`. The HTTP responses to
-`/api/v1/rooms.json` are logged with body and status, and any exception in
-`AppointmentWriter` is captured with full stack trace.
+If anything misfires, enable the verbose file logger by running
+
+```powershell
+.\scripts\Set-DevRegistry.ps1 -DebugLogging
+```
+
+(or set `HKLM\SOFTWARE\GreenroomConnector\DebugLogging` to `true` directly).
+Restart Outlook, reproduce the issue and inspect
+`%LOCALAPPDATA%\GreenroomConnector\debug.log`. The log contains full HTTP
+responses to `/api/v1/rooms.json` (status + body) plus any exception in
+`AppointmentWriter` with full stack trace. The file rotates to `debug.log.old`
+once it exceeds 1 MB. **Disable again** (`-DebugLogging:$false`) when you are
+done — the file holds room IDs, owners and friendly IDs, which are all
+join-link material.
 
 ## Local stack via Docker Compose
 
@@ -194,6 +204,40 @@ The `Strings.Meeting_DialIn` resource contains the wrapping text around the
 dial-in number; `{number}` is substituted at runtime with the
 `DialInNumber` registry value.
 
+## Release & code signing
+
+The dev build is signed with a self-issued, gitignored test key
+(`GreenroomConnector_TemporaryKey.pfx`, thumbprint `7C1CF8…`). That is enough
+to load the add-in locally but **not** for distribution:
+
+- **VSTO manifests** (`.vsto`, `.dll.manifest`) need to be signed with a
+  certificate that chains to a CA Outlook trusts; otherwise users see a
+  *"publisher not verified"* prompt on first load (or, with stricter Outlook
+  trust settings, the add-in is silently disabled).
+- **Add-in assembly** (`GreenroomConnector.dll`) should carry an Authenticode
+  signature for SmartScreen and corporate AV reputation.
+- **MSI** (`GreenroomConnector.msi`) should be Authenticode-signed too —
+  otherwise SmartScreen warns at install time and Group-Policy-managed
+  endpoints may block it outright.
+
+Production checklist before tagging a release:
+
+1. Replace `<ManifestKeyFile>` / `<ManifestCertificateThumbprint>` in
+   [`GreenroomConnector.csproj`](../src/GreenroomConnector/GreenroomConnector.csproj)
+   with the production code-signing certificate (kept out of the repo —
+   load it from the Windows certificate store via thumbprint, or feed it in
+   from CI secrets).
+2. Sign the built `GreenroomConnector.dll` with `signtool sign /fd SHA256
+   /tr http://timestamp.digicert.com /td SHA256 …` (use any RFC 3161
+   timestamp server) before packaging.
+3. Sign `GreenroomConnector.msi` after WiX builds it, with the same cert
+   and timestamp options.
+4. Verify the chain on a clean VM: `signtool verify /pa /v
+   GreenroomConnector.msi`.
+
+The temp key may stay in the csproj for the F5 dev loop; just don't ship the
+artifacts it produces.
+
 ## Silent install (once the MSI is built)
 
 ```cmd
@@ -202,8 +246,11 @@ msiexec /i GreenroomConnector.msi /qn ^
     LANGUAGE=auto ^
     LOCATIONTEXT="BigBlueButton-Konferenz" ^
     SHOWDIALIN=true ^
-    DIALINNUMBER="+49 30 1234 5678"
+    DIALINNUMBER="+49 30 1234 5678" ^
+    DEBUGLOGGING=false
 ```
 
-`GREENLIGHTURL` is required. The other properties are optional with sensible
-defaults.
+`GREENLIGHTURL` is required and must use `https://` unless it points at a
+loopback host (`localhost`, `127.0.0.1`, `::1`) — the add-in rejects plain
+HTTP for any other host because the session cookie would otherwise travel
+unencrypted. The remaining properties are optional with sensible defaults.

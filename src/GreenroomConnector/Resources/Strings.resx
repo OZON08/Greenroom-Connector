@@ -39,6 +39,10 @@
   <data name="Ribbon_GroupLabel" xml:space="preserve"><value>BigBlueButton</value></data>
   <data name="Ribbon_ButtonLabel" xml:space="preserve"><value>Add BigBlueButton meeting</value></data>
   <data name="Ribbon_ButtonSupertip" xml:space="preserve"><value>Insert a join link for one of your Greenlight rooms into this appointment.</value></data>
+  <data name="Ribbon_SignOutLabel" xml:space="preserve"><value>Sign out</value></data>
+  <data name="Ribbon_SignOutSupertip" xml:space="preserve"><value>Forget the saved Greenlight session on this computer. Next time, you will need to sign in again.</value></data>
+
+  <data name="SignOut_DoneMessage" xml:space="preserve"><value>You have been signed out on this computer. The server-side session at Greenlight / Keycloak may still be active in your browser until it expires.</value></data>
 
   <data name="RoomPicker_Title" xml:space="preserve"><value>Select BigBlueButton room</value></data>
   <data name="RoomPicker_Header" xml:space="preserve"><value>Pick a room. Its join link will be added to the appointment.</value></data>

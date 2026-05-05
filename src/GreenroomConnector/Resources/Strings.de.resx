@@ -39,6 +39,10 @@
   <data name="Ribbon_GroupLabel" xml:space="preserve"><value>BigBlueButton</value></data>
   <data name="Ribbon_ButtonLabel" xml:space="preserve"><value>BigBlueButton-Meeting einfügen</value></data>
   <data name="Ribbon_ButtonSupertip" xml:space="preserve"><value>Fügt den Einwahl-Link eines Greenlight-Raums in diesen Termin ein.</value></data>
+  <data name="Ribbon_SignOutLabel" xml:space="preserve"><value>Abmelden</value></data>
+  <data name="Ribbon_SignOutSupertip" xml:space="preserve"><value>Verwirft die gespeicherte Greenlight-Sitzung auf diesem Rechner. Beim nächsten Einfügen ist eine erneute Anmeldung nötig.</value></data>
+
+  <data name="SignOut_DoneMessage" xml:space="preserve"><value>Auf diesem Rechner abgemeldet. Die serverseitige Sitzung bei Greenlight / Keycloak im Browser bleibt ggf. bestehen, bis sie abläuft.</value></data>
 
   <data name="RoomPicker_Title" xml:space="preserve"><value>BigBlueButton-Raum auswählen</value></data>
   <data name="RoomPicker_Header" xml:space="preserve"><value>Wähle einen Raum aus. Der Einwahl-Link wird in den Termin eingefügt.</value></data>

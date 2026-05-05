@@ -1,5 +1,11 @@
 # Local Greenlight v3 + Keycloak stack for testing the Outlook add-in.
 #
+# SECURITY: this stack contains hardcoded dev credentials (Postgres, Keycloak
+# admin, OIDC client secret, Rails SECRET_KEY_BASE) and test users with known
+# passwords (test123 / alice123). It is NOT safe to expose externally. Ports
+# are bound to 127.0.0.1 below so the stack stays loopback-only — do not
+# remove the bind address unless you fully understand what you are exposing.
+#
 # Quick start (PowerShell, from repo root):
 #   1. docker compose -f compose/docker-compose.dev.yml up -d
 #   2. .\scripts\Set-DevRegistry.ps1 -GreenlightUrl http://localhost:3000
@@ -63,7 +69,8 @@ services:
       KC_HTTP_ENABLED: "true"
       KC_HEALTH_ENABLED: "true"
     ports:
-      - "8080:8080"
+      # Loopback-only: see SECURITY note at the top of this file.
+      - "127.0.0.1:8080:8080"
     volumes:
       - ./keycloak:/opt/keycloak/data/import:ro
     networks:
@@ -102,7 +109,8 @@ services:
       DEFAULT_LOCALE: de
       RAILS_LOG_TO_STDOUT: "true"
     ports:
-      - "3000:3000"
+      # Loopback-only: see SECURITY note at the top of this file.
+      - "127.0.0.1:3000:3000"
     volumes:
       # Dev override: Greenlight v3 hardcodes config.force_ssl = true, which
       # breaks plain HTTP access. This initializer flips it back off.

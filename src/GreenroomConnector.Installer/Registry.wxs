@@ -13,6 +13,7 @@
           <RegistryValue Type="string" Name="LocationText" Value="[LOCATIONTEXT]" />
           <RegistryValue Type="string" Name="ShowDialIn" Value="[SHOWDIALIN]" />
           <RegistryValue Type="string" Name="DialInNumber" Value="[DIALINNUMBER]" />
+          <RegistryValue Type="string" Name="DebugLogging" Value="[DEBUGLOGGING]" />
           <RegistryValue Type="string" Name="InstallDir" Value="[INSTALLFOLDER]" KeyPath="yes" />
           <RegistryValue Type="string" Name="Version" Value="[ProductVersion]" />
         </RegistryKey>

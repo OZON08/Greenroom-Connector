@@ -149,6 +149,7 @@
     </Compile>
     <Compile Include="RibbonHandler.cs" />
     <Compile Include="Models\Room.cs" />
+    <Compile Include="Services\DebugLog.cs" />
     <Compile Include="Services\GreenlightClient.cs" />
     <Compile Include="Services\SessionStore.cs" />
     <Compile Include="Services\SettingsProvider.cs" />

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -73,7 +72,8 @@ namespace GreenroomConnector.Services
                     LastRoomsStatusCode = (int)response.StatusCode;
                     var body = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                     LastRoomsResponseBody = body;
-                    WriteDebugLog(body, (int)response.StatusCode);
+                    DebugLog.Write("GET /api/v1/rooms.json -> HTTP " + (int)response.StatusCode
+                        + Environment.NewLine + (body ?? "(empty)") + Environment.NewLine + "----");
 
                     if (response.StatusCode == HttpStatusCode.Unauthorized
                         || response.StatusCode == HttpStatusCode.Forbidden)
@@ -117,22 +117,6 @@ namespace GreenroomConnector.Services
                 request.Headers.TryAddWithoutValidation("Cookie", cookie);
             }
             return request;
-        }
-
-        private static void WriteDebugLog(string body, int status)
-        {
-            try
-            {
-                var dir = Path.Combine(
-                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                    "GreenroomConnector");
-                Directory.CreateDirectory(dir);
-                var path = Path.Combine(dir, "debug.log");
-                File.AppendAllText(path,
-                    $"[{DateTime.UtcNow:O}] GET /api/v1/rooms.json -> HTTP {status}\n"
-                    + (body ?? "(empty)") + "\n----\n");
-            }
-            catch { /* never let logging break the call */ }
         }
 
         public void Dispose()

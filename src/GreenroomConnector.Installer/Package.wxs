@@ -22,6 +22,7 @@
              LOCATIONTEXT="BigBlueButton-Konferenz"
              SHOWDIALIN=true
              DIALINNUMBER="+49 30 1234 5678"
+             DEBUGLOGGING=false
     -->
     <Property Id="GREENLIGHTURL" Secure="yes" />
     <Property Id="LANGUAGE" Value="auto" Secure="yes" />
@@ -35,6 +36,11 @@
     <!-- Deployment-specific dial-in phone number, substituted into the
          {number} placeholder of Strings.Meeting_DialIn. -->
     <Property Id="DIALINNUMBER" Secure="yes" />
+    <!-- Toggle ("true"/"false") for the verbose file logger under
+         %LocalAppData%\GreenroomConnector\debug.log. Off by default; the log
+         records full HTTP response bodies and exception stacks, so it is a
+         privacy + disk-growth concern when always on. -->
+    <Property Id="DEBUGLOGGING" Value="false" Secure="yes" />
 
     <!-- Require GREENLIGHTURL at install time (skippable for repair via REINSTALLMODE). -->
     <Launch Condition="GREENLIGHTURL OR Installed"

@@ -18,6 +18,7 @@ namespace GreenroomConnector
         {
             Instance = this;
             Settings = new SettingsProvider();
+            DebugLog.Init(Settings);
             Session = new SessionStore();
             Client = new GreenlightClient(Settings, Session);
             Writer = new AppointmentWriter(Settings);

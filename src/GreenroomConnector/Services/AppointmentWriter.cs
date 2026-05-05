@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.Reflection;
 using GreenroomConnector.Models;
 using GreenroomConnector.Resources;
@@ -38,11 +37,11 @@ namespace GreenroomConnector.Services
                     _settings.LocationText,
                     _settings.ShowDialIn,
                     _settings.DialInNumber);
-                Log("InsertMeetingLink OK for room " + (room.Name ?? room.FriendlyId));
+                DebugLog.Write("InsertMeetingLink OK for room " + (room.Name ?? room.FriendlyId));
             }
             catch (Exception ex)
             {
-                Log("InsertMeetingLink FAILED: " + ex.GetType().Name + ": " + ex.Message
+                DebugLog.Write("InsertMeetingLink FAILED: " + ex.GetType().Name + ": " + ex.Message
                     + Environment.NewLine + ex.StackTrace);
                 throw;
             }
@@ -114,7 +113,7 @@ namespace GreenroomConnector.Services
         private static void TrySetProperty(object com, string name, object value)
         {
             try { SetProperty(com, name, value); }
-            catch (Exception ex) { Log("SetProperty(" + name + ") failed: " + ex.Message); }
+            catch (Exception ex) { DebugLog.Write("SetProperty(" + name + ") failed: " + ex.Message); }
         }
 
         private static string SafeGetString(object com, string name)
@@ -125,20 +124,6 @@ namespace GreenroomConnector.Services
                 return v == null ? string.Empty : Convert.ToString(v) ?? string.Empty;
             }
             catch { return string.Empty; }
-        }
-
-        private static void Log(string message)
-        {
-            try
-            {
-                var dir = Path.Combine(
-                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                    "GreenroomConnector");
-                Directory.CreateDirectory(dir);
-                File.AppendAllText(Path.Combine(dir, "debug.log"),
-                    "[" + DateTime.UtcNow.ToString("O") + "] " + message + Environment.NewLine);
-            }
-            catch { /* never let logging break the call */ }
         }
     }
 }

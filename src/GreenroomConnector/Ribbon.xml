@@ -12,6 +12,12 @@
                   getImage="OnGetButtonImage"
                   size="large"
                   onAction="OnInsertGreenlightLink" />
+          <button id="signOutButton"
+                  getLabel="OnGetSignOutLabel"
+                  getSupertip="OnGetSignOutSupertip"
+                  imageMso="LogOff"
+                  size="normal"
+                  onAction="OnSignOut" />
         </group>
       </tab>
       <tab idMso="TabAppointmentScheduling">
@@ -24,6 +30,12 @@
                   getImage="OnGetButtonImage"
                   size="large"
                   onAction="OnInsertGreenlightLink" />
+          <button id="signOutButtonMeeting"
+                  getLabel="OnGetSignOutLabel"
+                  getSupertip="OnGetSignOutSupertip"
+                  imageMso="LogOff"
+                  size="normal"
+                  onAction="OnSignOut" />
         </group>
       </tab>
     </tabs>

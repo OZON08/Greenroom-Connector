@@ -48,6 +48,9 @@ namespace GreenroomConnector.Resources
         internal static string Ribbon_GroupLabel => Get(nameof(Ribbon_GroupLabel));
         internal static string Ribbon_ButtonLabel => Get(nameof(Ribbon_ButtonLabel));
         internal static string Ribbon_ButtonSupertip => Get(nameof(Ribbon_ButtonSupertip));
+        internal static string Ribbon_SignOutLabel => Get(nameof(Ribbon_SignOutLabel));
+        internal static string Ribbon_SignOutSupertip => Get(nameof(Ribbon_SignOutSupertip));
+        internal static string SignOut_DoneMessage => Get(nameof(SignOut_DoneMessage));
         internal static string RoomPicker_Title => Get(nameof(RoomPicker_Title));
         internal static string RoomPicker_Header => Get(nameof(RoomPicker_Header));
         internal static string RoomPicker_Loading => Get(nameof(RoomPicker_Loading));

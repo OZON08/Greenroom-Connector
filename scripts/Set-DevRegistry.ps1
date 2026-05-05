@@ -6,6 +6,7 @@
 #   .\scripts\Set-DevRegistry.ps1 -GreenlightUrl https://other.example.com
 #   .\scripts\Set-DevRegistry.ps1 -LocationText "BigBlueButton-Konferenz"
 #   .\scripts\Set-DevRegistry.ps1 -ShowDialIn
+#   .\scripts\Set-DevRegistry.ps1 -DebugLogging
 #   .\scripts\Set-DevRegistry.ps1 -Remove
 #
 # Admin rights are required because HKLM is per-machine.
@@ -26,6 +27,10 @@ param(
     # of Strings.Meeting_DialIn. If empty AND -ShowDialIn is set, the section
     # is suppressed (avoids printing a half-blank line).
     [string]$DialInNumber = '+49 30 1234 5678',
+    # Verbose file logger under %LocalAppData%\GreenroomConnector\debug.log.
+    # Off by default; the log writes full HTTP response bodies and exception
+    # stacks, so only enable it for troubleshooting.
+    [switch]$DebugLogging,
     [switch]$Remove
 )
 
@@ -53,19 +58,21 @@ if (-not (Test-Path $key)) {
     New-Item -Path $key -Force | Out-Null
 }
 
-$showDialInValue = if ($ShowDialIn) { 'true' } else { 'false' }
+$showDialInValue   = if ($ShowDialIn)   { 'true' } else { 'false' }
+$debugLoggingValue = if ($DebugLogging) { 'true' } else { 'false' }
 
-Set-ItemProperty -Path $key -Name 'GreenlightUrl' -Value $GreenlightUrl    -Type String
-Set-ItemProperty -Path $key -Name 'Language'      -Value $Language         -Type String
-Set-ItemProperty -Path $key -Name 'LocationText'  -Value $LocationText     -Type String
-Set-ItemProperty -Path $key -Name 'ShowDialIn'    -Value $showDialInValue  -Type String
-Set-ItemProperty -Path $key -Name 'DialInNumber'  -Value $DialInNumber     -Type String
-Set-ItemProperty -Path $key -Name 'InstallDir'    -Value '(dev)'           -Type String
+Set-ItemProperty -Path $key -Name 'GreenlightUrl' -Value $GreenlightUrl     -Type String
+Set-ItemProperty -Path $key -Name 'Language'      -Value $Language          -Type String
+Set-ItemProperty -Path $key -Name 'LocationText'  -Value $LocationText      -Type String
+Set-ItemProperty -Path $key -Name 'ShowDialIn'    -Value $showDialInValue   -Type String
+Set-ItemProperty -Path $key -Name 'DialInNumber'  -Value $DialInNumber      -Type String
+Set-ItemProperty -Path $key -Name 'DebugLogging'  -Value $debugLoggingValue -Type String
+Set-ItemProperty -Path $key -Name 'InstallDir'    -Value '(dev)'            -Type String
 
 # Drop the legacy DialInText value if a previous run wrote it.
 Remove-ItemProperty -Path $key -Name 'DialInText' -Force -ErrorAction SilentlyContinue
 
 Write-Host "Wrote:"
 Get-ItemProperty -Path $key |
-    Select-Object GreenlightUrl, Language, LocationText, ShowDialIn, DialInNumber, InstallDir |
+    Select-Object GreenlightUrl, Language, LocationText, ShowDialIn, DialInNumber, DebugLogging, InstallDir |
     Format-List

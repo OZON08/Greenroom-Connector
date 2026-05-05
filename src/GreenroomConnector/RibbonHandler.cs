@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Microsoft.Office.Core;
 using GreenroomConnector.Resources;
+using GreenroomConnector.Services;
 using GreenroomConnector.UI;
 using Outlook = Microsoft.Office.Interop.Outlook;
 using stdole;
@@ -35,6 +36,8 @@ namespace GreenroomConnector
         public string OnGetGroupLabel(IRibbonControl control) => Strings.Ribbon_GroupLabel;
         public string OnGetButtonLabel(IRibbonControl control) => Strings.Ribbon_ButtonLabel;
         public string OnGetButtonSupertip(IRibbonControl control) => Strings.Ribbon_ButtonSupertip;
+        public string OnGetSignOutLabel(IRibbonControl control) => Strings.Ribbon_SignOutLabel;
+        public string OnGetSignOutSupertip(IRibbonControl control) => Strings.Ribbon_SignOutSupertip;
 
         // Office Ribbon getImage callback. Returns the embedded PNG as an
         // IPictureDisp — the COM type the Office customUI expects. Bitmap
@@ -79,6 +82,52 @@ namespace GreenroomConnector
 
             var app = ThisAddIn.Instance?.Application;
             return app?.ActiveInspector()?.CurrentItem as Outlook.AppointmentItem;
+        }
+
+        // Drops the locally cached Greenlight session: clears the DPAPI cookie
+        // blob in HKCU and best-effort wipes the WebView2 user-data folder so
+        // the next sign-in starts from a clean browser state.
+        //
+        // Server-side teardown (Greenlight / Keycloak end-session) is NOT
+        // performed — that would require a transient WebView2 navigating to
+        // the logout endpoint. The shown message communicates that caveat.
+        public void OnSignOut(IRibbonControl control)
+        {
+            try
+            {
+                ThisAddIn.Instance?.Session?.Clear();
+                TryDeleteWebView2UserData();
+
+                MessageBox.Show(Strings.SignOut_DoneMessage, Strings.App_Name,
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (System.Exception ex)
+            {
+                MessageBox.Show(
+                    string.Format(Strings.Error_Unexpected, ex.Message),
+                    Strings.App_Name, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private static void TryDeleteWebView2UserData()
+        {
+            var folder = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "GreenroomConnector", "WebView2");
+
+            try
+            {
+                if (Directory.Exists(folder))
+                    Directory.Delete(folder, recursive: true);
+            }
+            catch (System.Exception ex)
+            {
+                // The msedgewebview2.exe host can briefly hold a lock on the
+                // SQLite cookie store after LoginWindow closes. Deletion is
+                // best-effort; in the worst case the folder is recreated /
+                // overwritten on the next sign-in.
+                DebugLog.Write("WebView2 user-data delete failed: " + ex.Message);
+            }
         }
     }
 }

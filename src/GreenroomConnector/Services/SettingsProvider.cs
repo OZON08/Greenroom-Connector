@@ -13,7 +13,30 @@ namespace GreenroomConnector.Services
             {
                 var raw = ReadHklm("GreenlightUrl");
                 if (string.IsNullOrWhiteSpace(raw)) return null;
-                return Uri.TryCreate(raw, UriKind.Absolute, out var uri) ? uri : null;
+                if (!Uri.TryCreate(raw, UriKind.Absolute, out var uri)) return null;
+
+                // Disallow plaintext HTTP for non-loopback hosts: the session
+                // cookie is sent on every API call and the WebView2 login flow
+                // would also travel in the clear. Loopback (localhost,
+                // 127.0.0.0/8, ::1) stays allowed so the local dev stack works.
+                if (uri.Scheme != Uri.UriSchemeHttps && !uri.IsLoopback) return null;
+                if (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps) return null;
+
+                return uri;
+            }
+        }
+
+        // Master switch for the verbose file logger under
+        // %LocalAppData%\GreenroomConnector\debug.log. Off by default — when
+        // enabled, full HTTP response bodies and exception stacks are written.
+        // REG_SZ "true"/"1" enables; anything else disables.
+        public bool DebugLogging
+        {
+            get
+            {
+                var raw = ReadHklm("DebugLogging");
+                return string.Equals(raw, "true", StringComparison.OrdinalIgnoreCase)
+                    || raw == "1";
             }
         }
 
