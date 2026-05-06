@@ -103,6 +103,8 @@ namespace GreenroomConnector.UI
                     return Task.FromResult(false);
 
                 ThisAddIn.Instance.Session.WriteCookie(login.SessionCookie);
+                if (!string.IsNullOrEmpty(login.AuthorizeUrl))
+                    ThisAddIn.Instance.Session.WriteAuthorizeUrl(login.AuthorizeUrl);
                 return Task.FromResult(true);
             }
         }

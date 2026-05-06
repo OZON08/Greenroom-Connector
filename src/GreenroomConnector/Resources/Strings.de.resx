@@ -42,7 +42,8 @@
   <data name="Ribbon_SignOutLabel" xml:space="preserve"><value>Abmelden</value></data>
   <data name="Ribbon_SignOutSupertip" xml:space="preserve"><value>Verwirft die gespeicherte Greenlight-Sitzung auf diesem Rechner. Beim nächsten Einfügen ist eine erneute Anmeldung nötig.</value></data>
 
-  <data name="SignOut_DoneMessage" xml:space="preserve"><value>Auf diesem Rechner abgemeldet. Die serverseitige Sitzung bei Greenlight / Keycloak im Browser bleibt ggf. bestehen, bis sie abläuft.</value></data>
+  <data name="SignOut_DoneMessage" xml:space="preserve"><value>Auf diesem Rechner und beim Identity Provider abgemeldet. Offene Browser-Sitzungen anderer Anwendungen mit demselben Single Sign-On werden ebenfalls beendet.</value></data>
+  <data name="SignOut_LocalOnlyMessage" xml:space="preserve"><value>Auf diesem Rechner abgemeldet. Die serverseitige Single-Logout-Abfrage konnte nicht durchgeführt werden – die SSO-Sitzung im Browser bleibt ggf. bestehen, bis sie abläuft.</value></data>
 
   <data name="RoomPicker_Title" xml:space="preserve"><value>BigBlueButton-Raum auswählen</value></data>
   <data name="RoomPicker_Header" xml:space="preserve"><value>Wähle einen Raum aus. Der Einwahl-Link wird in den Termin eingefügt.</value></data>
@@ -52,6 +53,7 @@
   <data name="RoomPicker_CancelButton" xml:space="preserve"><value>Abbrechen</value></data>
 
   <data name="Login_Title" xml:space="preserve"><value>Bei Greenlight anmelden</value></data>
+  <data name="Logout_Title" xml:space="preserve"><value>Abmelden …</value></data>
 
   <data name="Meeting_Header" xml:space="preserve"><value>BigBlueButton-Meeting</value></data>
   <data name="Meeting_Room" xml:space="preserve"><value>Raum</value></data>

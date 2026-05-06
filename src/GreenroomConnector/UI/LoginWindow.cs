@@ -29,6 +29,12 @@ namespace GreenroomConnector.UI
 
         public string SessionCookie { get; private set; }
 
+        // Captured on the first navigation that leaves the Greenlight host and
+        // carries a client_id query parameter — i.e. the OIDC authorize request.
+        // Persisted by the caller after a successful login so a later sign-out
+        // can reach the same IdP's end_session_endpoint via discovery.
+        public string AuthorizeUrl { get; private set; }
+
         public LoginWindow(Uri greenlightUrl)
         {
             _greenlightUrl = greenlightUrl ?? throw new ArgumentNullException(nameof(greenlightUrl));
@@ -50,12 +56,27 @@ namespace GreenroomConnector.UI
             var env = await CoreWebView2Environment.CreateAsync(null, userDataFolder).ConfigureAwait(true);
             await webView.EnsureCoreWebView2Async(env).ConfigureAwait(true);
 
+            webView.CoreWebView2.NavigationStarting += OnNavigationStarting;
+
             var startUrl = new Uri(_greenlightUrl, "/?sso=true").ToString();
             webView.CoreWebView2.Navigate(startUrl);
 
             _authPollTimer = new System.Windows.Forms.Timer { Interval = 1500 };
             _authPollTimer.Tick += AuthPollTimer_Tick;
             _authPollTimer.Start();
+        }
+
+        private void OnNavigationStarting(object sender, CoreWebView2NavigationStartingEventArgs e)
+        {
+            if (AuthorizeUrl != null) return;
+            if (!Uri.TryCreate(e.Uri, UriKind.Absolute, out var uri)) return;
+            if (string.Equals(uri.Host, _greenlightUrl.Host, StringComparison.OrdinalIgnoreCase)) return;
+            // Authorize requests always carry a client_id query parameter
+            // (RFC 6749 §4.1.1). Without it we may be looking at a
+            // pre-auth landing page or a static asset on the IdP host.
+            if (uri.Query?.IndexOf("client_id=", StringComparison.Ordinal) < 0) return;
+
+            AuthorizeUrl = uri.ToString();
         }
 
         private async void AuthPollTimer_Tick(object sender, EventArgs e)

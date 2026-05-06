@@ -84,28 +84,76 @@ namespace GreenroomConnector
             return app?.ActiveInspector()?.CurrentItem as Outlook.AppointmentItem;
         }
 
-        // Drops the locally cached Greenlight session: clears the DPAPI cookie
-        // blob in HKCU and best-effort wipes the WebView2 user-data folder so
-        // the next sign-in starts from a clean browser state.
-        //
-        // Server-side teardown (Greenlight / Keycloak end-session) is NOT
-        // performed — that would require a transient WebView2 navigating to
-        // the logout endpoint. The shown message communicates that caveat.
+        // Sign-out:
+        //   1. RP-initiated OIDC logout via a transient WebView2 (LogoutWindow).
+        //      Reads the authorize URL captured at login, resolves the IdP's
+        //      end_session_endpoint via discovery, navigates there with
+        //      client_id + post_logout_redirect_uri so the IdP can validate
+        //      the call without an id_token. Best-effort: any failure (no
+        //      authorize URL stored, discovery 404, navigation timeout) only
+        //      degrades to local-only sign-out.
+        //   2. Local cleanup runs unconditionally after step 1: clears the
+        //      DPAPI cookie blob in HKCU and wipes the WebView2 user-data folder.
         public void OnSignOut(IRibbonControl control)
         {
+            var serverLogoutOk = false;
+            try
+            {
+                serverLogoutOk = TryServerLogout();
+            }
+            catch (System.Exception ex)
+            {
+                DebugLog.Write("Server-side sign-out attempt threw: " + ex.Message);
+            }
+
             try
             {
                 ThisAddIn.Instance?.Session?.Clear();
                 TryDeleteWebView2UserData();
 
-                MessageBox.Show(Strings.SignOut_DoneMessage, Strings.App_Name,
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                var message = serverLogoutOk
+                    ? Strings.SignOut_DoneMessage
+                    : Strings.SignOut_LocalOnlyMessage;
+                MessageBox.Show(message, Strings.App_Name,
+                    MessageBoxButtons.OK,
+                    serverLogoutOk ? MessageBoxIcon.Information : MessageBoxIcon.Warning);
             }
             catch (System.Exception ex)
             {
                 MessageBox.Show(
                     string.Format(Strings.Error_Unexpected, ex.Message),
                     Strings.App_Name, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private static bool TryServerLogout()
+        {
+            var addin = ThisAddIn.Instance;
+            if (addin == null) return false;
+
+            var greenlightUrl = addin.Settings?.GreenlightUrl;
+            var authorizeUrl = addin.Session?.ReadAuthorizeUrl();
+            if (greenlightUrl == null || string.IsNullOrEmpty(authorizeUrl))
+            {
+                DebugLog.Write("Server-side sign-out skipped: no authorize URL stored or no GreenlightUrl.");
+                return false;
+            }
+
+            // Discovery is async; .Result is acceptable here because we're on
+            // the UI thread, the call has a 5 s timeout per candidate, and
+            // there's no SynchronizationContext deadlock risk in OidcDiscovery
+            // (it uses ConfigureAwait(false) throughout).
+            var endpoint = OidcDiscovery.ResolveAsync(authorizeUrl).GetAwaiter().GetResult();
+            if (endpoint == null || string.IsNullOrEmpty(endpoint.EndSessionEndpoint))
+            {
+                DebugLog.Write("Server-side sign-out skipped: end_session_endpoint not discoverable.");
+                return false;
+            }
+
+            using (var window = new LogoutWindow(greenlightUrl, endpoint.EndSessionEndpoint, endpoint.ClientId))
+            {
+                window.ShowDialog();
+                return window.ServerLogoutCompleted;
             }
         }
 

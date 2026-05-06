@@ -51,6 +51,7 @@ namespace GreenroomConnector.Resources
         internal static string Ribbon_SignOutLabel => Get(nameof(Ribbon_SignOutLabel));
         internal static string Ribbon_SignOutSupertip => Get(nameof(Ribbon_SignOutSupertip));
         internal static string SignOut_DoneMessage => Get(nameof(SignOut_DoneMessage));
+        internal static string SignOut_LocalOnlyMessage => Get(nameof(SignOut_LocalOnlyMessage));
         internal static string RoomPicker_Title => Get(nameof(RoomPicker_Title));
         internal static string RoomPicker_Header => Get(nameof(RoomPicker_Header));
         internal static string RoomPicker_Loading => Get(nameof(RoomPicker_Loading));
@@ -58,6 +59,7 @@ namespace GreenroomConnector.Resources
         internal static string RoomPicker_InsertButton => Get(nameof(RoomPicker_InsertButton));
         internal static string RoomPicker_CancelButton => Get(nameof(RoomPicker_CancelButton));
         internal static string Login_Title => Get(nameof(Login_Title));
+        internal static string Logout_Title => Get(nameof(Logout_Title));
         internal static string Meeting_Header => Get(nameof(Meeting_Header));
         internal static string Meeting_Room => Get(nameof(Meeting_Room));
         internal static string Meeting_JoinLinkText => Get(nameof(Meeting_JoinLinkText));

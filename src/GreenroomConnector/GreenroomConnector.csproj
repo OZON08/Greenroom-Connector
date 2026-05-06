@@ -151,6 +151,7 @@
     <Compile Include="Models\Room.cs" />
     <Compile Include="Services\DebugLog.cs" />
     <Compile Include="Services\GreenlightClient.cs" />
+    <Compile Include="Services\OidcDiscovery.cs" />
     <Compile Include="Services\SessionStore.cs" />
     <Compile Include="Services\SettingsProvider.cs" />
     <Compile Include="Services\AppointmentWriter.cs" />
@@ -165,6 +166,12 @@
     </Compile>
     <Compile Include="UI\LoginWindow.Designer.cs">
       <DependentUpon>LoginWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\LogoutWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\LogoutWindow.Designer.cs">
+      <DependentUpon>LogoutWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Resources\AppIcon.cs" />
     <Compile Include="Resources\Localization.cs" />

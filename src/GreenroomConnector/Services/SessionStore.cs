@@ -10,6 +10,7 @@ namespace GreenroomConnector.Services
         private const string HkcuKey = @"Software\GreenroomConnector";
         private const string CookieValueName = "SessionCookie";
         private const string ExpiryValueName = "SessionExpiresAt";
+        private const string AuthorizeUrlValueName = "OidcAuthorizeUrl";
 
         public string ReadCookie()
         {
@@ -56,6 +57,44 @@ namespace GreenroomConnector.Services
             }
         }
 
+        // OIDC authorize URL captured during the login flow. Holds enough to
+        // drive a single-logout against the same IdP later: client_id sits in
+        // the query string, the issuer is derivable from the path. Stored
+        // DPAPI-encrypted because the URL leaks the IdP host + client_id —
+        // not as sensitive as the cookie, but no point exposing it in cleartext.
+        public string ReadAuthorizeUrl()
+        {
+            using (var key = Registry.CurrentUser.OpenSubKey(HkcuKey))
+            {
+                if (key == null) return null;
+                if (!(key.GetValue(AuthorizeUrlValueName) is byte[] encrypted)) return null;
+
+                try
+                {
+                    var plain = ProtectedData.Unprotect(encrypted, null, DataProtectionScope.CurrentUser);
+                    return Encoding.UTF8.GetString(plain);
+                }
+                catch (CryptographicException)
+                {
+                    return null;
+                }
+            }
+        }
+
+        public void WriteAuthorizeUrl(string authorizeUrl)
+        {
+            if (string.IsNullOrEmpty(authorizeUrl)) return;
+
+            var encrypted = ProtectedData.Protect(
+                Encoding.UTF8.GetBytes(authorizeUrl), null, DataProtectionScope.CurrentUser);
+
+            using (var key = Registry.CurrentUser.CreateSubKey(HkcuKey))
+            {
+                if (key == null) return;
+                key.SetValue(AuthorizeUrlValueName, encrypted, RegistryValueKind.Binary);
+            }
+        }
+
         public void Clear()
         {
             using (var key = Registry.CurrentUser.OpenSubKey(HkcuKey, writable: true))
@@ -63,6 +102,7 @@ namespace GreenroomConnector.Services
                 if (key == null) return;
                 key.DeleteValue(CookieValueName, throwOnMissingValue: false);
                 key.DeleteValue(ExpiryValueName, throwOnMissingValue: false);
+                key.DeleteValue(AuthorizeUrlValueName, throwOnMissingValue: false);
             }
         }
     }
