@@ -47,6 +47,11 @@ Ribbon button on a new appointment, room picker, and the resulting body block.
 - **Keycloak / OIDC SSO** — the embedded Microsoft Edge WebView2 hosts the
   real Greenlight sign-in flow, so any auth method your IdP supports works
   (password, MFA, conditional access)
+- **Single-logout via the Sign-out button** — clears the local DPAPI cookie
+  *and* drives an RP-initiated OIDC logout against your IdP, so the SSO
+  session in the user's browser ends with the add-in session
+- **HTTPS-only out of the box** — non-loopback `GreenlightUrl` values must
+  use `https://`; the add-in refuses to send the session cookie in the clear
 - **Per-machine silent install** — WiX v4 MSI with public properties; deploy
   via Group Policy / Intune without user interaction
 - **Localised UI** — German and English ship in the box; add more by dropping
@@ -69,23 +74,29 @@ msiexec /i GreenroomConnector.msi /qn `
     LANGUAGE=auto `
     LOCATIONTEXT="BigBlueButton-Konferenz" `
     SHOWDIALIN=true `
-    DIALINNUMBER="+49 30 1234 5678"
+    DIALINNUMBER="+49 30 1234 5678" `
+    DEBUGLOGGING=false
 ```
+
+`GREENLIGHTURL` is required; everything else has sensible defaults. Plain
+`http://` is rejected for non-loopback hosts.
 
 ## Configuration
 
 All admin settings live under
 `HKEY_LOCAL_MACHINE\SOFTWARE\GreenroomConnector` (REG_SZ) and are written by
-the MSI. Per-user state (the cached Keycloak session cookie, DPAPI-encrypted)
-lives under `HKEY_CURRENT_USER\Software\GreenroomConnector`.
+the MSI. Per-user state (the cached Greenlight session cookie and the
+captured OIDC authorize URL used for sign-out, both DPAPI-encrypted) lives
+under `HKEY_CURRENT_USER\Software\GreenroomConnector`.
 
-| Value          | Purpose | Example |
-|----------------|---------|---------|
-| `GreenlightUrl` | Base URL of your Greenlight instance | `https://meet.example.org` |
+| Value           | Purpose | Example |
+|-----------------|---------|---------|
+| `GreenlightUrl` | Base URL of your Greenlight instance. Must be `https://` unless it points at a loopback host (`localhost`, `127.0.0.1`, `::1`). | `https://meet.example.org` |
 | `Language`      | UI culture (`auto`, `de`, `en`) | `auto` |
 | `LocationText`  | Template for the `Location` field. `{room}` is replaced with the room name. Empty = leave Location untouched. | `BigBlueButton: {room}` |
 | `ShowDialIn`    | `true` / `false` toggle for the dial-in section | `true` |
 | `DialInNumber`  | Phone number substituted into `Strings.Meeting_DialIn` via `{number}` | `+49 30 1234 5678` |
+| `DebugLogging`  | `true` / `false` toggle for the verbose file logger under `%LocalAppData%\GreenroomConnector\debug.log`. Logs HTTP response bodies + exception stacks; off by default — enable only for troubleshooting. | `false` |
 
 The wrapping text around the dial-in number is translatable and lives in
 [`src/GreenroomConnector/Resources/Strings.resx`](src/GreenroomConnector/Resources/Strings.resx)
