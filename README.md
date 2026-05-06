@@ -36,9 +36,32 @@ the attendee side.
 
 ## How it looks
 
-Ribbon button on a new appointment, room picker, and the resulting body block.
-
-> *Screenshots will be added once the first signed build is out.*
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <img src="docs/images/screenshot-01-ribbon.png" alt="BigBlueButton ribbon group on a new appointment" width="460" />
+      <br />
+      <sub>Ribbon group on a new appointment</sub>
+    </td>
+    <td align="center" width="50%">
+      <img src="docs/images/screenshot-02-login.png" alt="Embedded WebView2 hosting the Greenlight / Keycloak sign-in" width="460" />
+      <br />
+      <sub>Embedded Greenlight / Keycloak sign-in</sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="50%">
+      <img src="docs/images/screenshot-03-roompicker.png" alt="Room picker listing the user's Greenlight rooms" width="460" />
+      <br />
+      <sub>Pick a Greenlight room</sub>
+    </td>
+    <td align="center" width="50%">
+      <img src="docs/images/screenshot-04-appointment.png" alt="Appointment with the inserted join link and location" width="460" />
+      <br />
+      <sub>Resulting appointment with join link and location</sub>
+    </td>
+  </tr>
+</table>
 
 ## Features
 
