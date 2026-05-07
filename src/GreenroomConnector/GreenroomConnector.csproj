@@ -220,6 +220,15 @@
   <PropertyGroup>
     <ApplicationIcon>Resources\AppIcon.ico</ApplicationIcon>
   </PropertyGroup>
+  <!-- VSTO manifest description.publisher and description.product. Without these
+       the Office targets default both to $(AssemblyName) ("GreenroomConnector"),
+       which Outlook then surfaces as the add-in's Publisher and FriendlyName.
+       Sourced from /Directory.Build.props so the values stay in sync with the
+       MSI registry entries and the assembly attributes. -->
+  <PropertyGroup>
+    <PublisherName>$(GrcPublisherName)</PublisherName>
+    <ProductName>$(GrcProductName)</ProductName>
+  </PropertyGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\OfficeTools\Microsoft.VisualStudio.Tools.Office.targets" Condition="'$(VSToolsPath)' != ''" />
 
