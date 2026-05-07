@@ -11,9 +11,11 @@
       <Component Id="OutlookAddinRegistration" Guid="A1B2C3D4-C001-4000-8000-000000000001">
         <RegistryKey Root="HKLM"
                      Key="SOFTWARE\Microsoft\Office\Outlook\Addins\GreenroomConnector">
-          <!-- Surfaced in Outlook → File → Options → Add-ins → COM Add-ins. -->
+          <!-- Surfaced in Outlook → File → Options → Add-ins → COM Add-ins.
+               Use the short form: Outlook truncates / blanks the row when
+               Description gets past ~256 chars. -->
           <RegistryValue Type="string" Name="Description"
-                         Value="$(var.Description)" />
+                         Value="$(var.ShortDescription)" />
           <RegistryValue Type="string" Name="FriendlyName"
                          Value="$(var.ProductName)" />
           <RegistryValue Type="integer" Name="LoadBehavior" Value="3" />

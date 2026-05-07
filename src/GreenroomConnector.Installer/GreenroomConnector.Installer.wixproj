@@ -25,6 +25,7 @@
   &lt;?define PublisherName="$(GrcPublisherName)" ?&gt;
   &lt;?define ProductName="$(GrcProductName)" ?&gt;
   &lt;?define Description="$(GrcDescription)" ?&gt;
+  &lt;?define ShortDescription="$(GrcShortDescription)" ?&gt;
 &lt;/Include&gt;
 </_WixVariablesContent>
     </PropertyGroup>

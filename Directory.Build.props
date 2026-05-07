@@ -8,22 +8,31 @@
     breaks the SLN's Debug|Any CPU mapping (error MSB4126:
     "configuration ... NoVariablesDefault").
 
+    GrcDescription is the long-form text used where space is plentiful: the
+    AssemblyDescriptionAttribute on the DLL, MSI SummaryInformation, ARP
+    "Comments", etc. GrcShortDescription is the one-liner that ends up in
+    UI surfaces with a tight character budget — most importantly the
+    Outlook COM Add-ins dialog, which truncates / blanks longer values.
+
     Consumers:
       - src/GreenroomConnector/GreenroomConnector.csproj
         Generates obj/.../AssemblyVersionInfo.cs from these properties via a
         WriteCodeFragment target. AssemblyInfo.cs holds the constants.
+        Sets OfficeApplicationDescription to GrcShortDescription so the
+        VSTO build writes a usable HKCU + manifest description.
       - src/GreenroomConnector.Installer/GreenroomConnector.Installer.wixproj
         Generates Variables.generated.wxi next to the WXS files; both
         Package.wxs and OutlookAddin.wxs <?include?> it and read the values
         as $(var.Version), $(var.PublisherName), $(var.ProductName),
-        $(var.Description). The WXI keeps the unprefixed names so the WXS
-        side stays terse.
+        $(var.Description), $(var.ShortDescription). The WXI keeps the
+        unprefixed names so the WXS side stays terse.
   -->
   <PropertyGroup>
     <GrcVersion>1.0.0.0</GrcVersion>
     <GrcPublisherName>OZON08</GrcPublisherName>
     <GrcProductName>Greenroom Connector</GrcProductName>
     <GrcCopyright>Copyright © 2026 OZON08</GrcCopyright>
+    <GrcShortDescription>Outlook add-in that drops a join link for your Greenlight / BigBlueButton room into any appointment.</GrcShortDescription>
     <GrcDescription>Inserts a join link for one of your Greenlight / BigBlueButton rooms into an Outlook appointment. Fetches the room list live from your Greenlight server via the Outlook ribbon, hosts the Greenlight / Keycloak (OIDC) sign-in in an embedded WebView2, and optionally adds a phone dial-in section. Sign-out performs an RP-initiated single-logout against the IdP. © 2026 OZON08, MIT license.</GrcDescription>
   </PropertyGroup>
 
