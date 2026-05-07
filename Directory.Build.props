@@ -36,4 +36,9 @@
     <GrcDescription>Inserts a join link for one of your Greenlight / BigBlueButton rooms into an Outlook appointment. Fetches the room list live from your Greenlight server via the Outlook ribbon, hosts the Greenlight / Keycloak (OIDC) sign-in in an embedded WebView2, and optionally adds a phone dial-in section. Sign-out performs an RP-initiated single-logout against the IdP. © 2026 OZON08, MIT license.</GrcDescription>
   </PropertyGroup>
 
+  <!-- Local machine/user settings such as the development signing certificate
+       thumbprint. This file is gitignored on purpose. -->
+  <Import Project="Directory.Build.local.props"
+          Condition="Exists('Directory.Build.local.props')" />
+
 </Project>

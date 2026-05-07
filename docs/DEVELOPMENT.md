@@ -82,9 +82,9 @@ VSTO registers the add-in under
 debug session and unregisters it when VS closes — no manual setup needed for
 the F5 loop.
 
-If Outlook shows a *"publisher not verified"* warning, click **Install**. The
-binaries are unsigned during dev — see [Release & code signing](#release--code-signing)
-for what production builds need.
+If Outlook shows a *"publisher not verified"* warning, create and trust the
+local development signing certificate described in
+[Release & code signing](#release--code-signing), then rebuild.
 
 ## 4. First test
 
@@ -206,37 +206,74 @@ dial-in number; `{number}` is substituted at runtime with the
 
 ## Release & code signing
 
-The dev build is signed with a self-issued, gitignored test key
-(`GreenroomConnector_TemporaryKey.pfx`, thumbprint `7C1CF8…`). That is enough
-to load the add-in locally but **not** for distribution:
+The project uses one local code-signing certificate for all development signing
+paths:
 
-- **VSTO manifests** (`.vsto`, `.dll.manifest`) need to be signed with a
-  certificate that chains to a CA Outlook trusts; otherwise users see a
-  *"publisher not verified"* prompt on first load (or, with stricter Outlook
-  trust settings, the add-in is silently disabled).
-- **Add-in assembly** (`GreenroomConnector.dll`) should carry an Authenticode
-  signature for SmartScreen and corporate AV reputation.
-- **MSI** (`GreenroomConnector.msi`) should be Authenticode-signed too —
-  otherwise SmartScreen warns at install time and Group-Policy-managed
-  endpoints may block it outright.
+- **VSTO manifests** (`.vsto`, `.dll.manifest`) are signed during the VSTO
+  build via `ManifestCertificateThumbprint`.
+- **Add-in assembly** (`GreenroomConnector.dll`) can be Authenticode-signed
+  before the VSTO manifests are generated, so the manifest hashes stay valid.
+- **MSI** files can be Authenticode-signed after WiX builds them.
 
-Production checklist before tagging a release:
+Create the local self-signed certificate once:
 
-1. Replace `<ManifestKeyFile>` / `<ManifestCertificateThumbprint>` in
-   [`GreenroomConnector.csproj`](../src/GreenroomConnector/GreenroomConnector.csproj)
-   with the production code-signing certificate (kept out of the repo —
-   load it from the Windows certificate store via thumbprint, or feed it in
-   from CI secrets).
-2. Sign the built `GreenroomConnector.dll` with `signtool sign /fd SHA256
-   /tr http://timestamp.digicert.com /td SHA256 …` (use any RFC 3161
-   timestamp server) before packaging.
-3. Sign `GreenroomConnector.msi` after WiX builds it, with the same cert
-   and timestamp options.
-4. Verify the chain on a clean VM: `signtool verify /pa /v
-   GreenroomConnector.msi`.
+```powershell
+.\scripts\New-SigningCertificate.ps1
+```
 
-The temp key may stay in the csproj for the F5 dev loop; just don't ship the
-artifacts it produces.
+Defaults are intentionally generic:
+
+- Subject: `CN=Greenroom Connector Dev Signing`
+- Lifetime: 10 years
+- Private key: `Cert:\CurrentUser\My`
+- Trust: imported into `Cert:\CurrentUser\Root` and
+  `Cert:\CurrentUser\TrustedPublisher`
+- Local build config: `Directory.Build.local.props` with
+  `GrcSigningCertificateThumbprint`
+
+`Directory.Build.local.props` is gitignored. It contains only the thumbprint,
+not a PFX file or password.
+
+The certificate script is parameterized. Common overrides:
+
+```powershell
+.\scripts\New-SigningCertificate.ps1 `
+    -CommonName "Your publisher name" `
+    -Organization "Your organization" `
+    -EmailAddress you@example.com `
+    -Years 10
+```
+
+For a fully custom X.500 subject, pass `-Subject` directly.
+
+Build the MSI packages with VSTO manifest signing:
+
+```powershell
+.\scripts\Build-Installer.ps1
+```
+
+Build and Authenticode-sign `GreenroomConnector.dll` plus each generated MSI
+with the same certificate:
+
+```powershell
+.\scripts\Build-Installer.ps1 -SignAuthenticode
+```
+
+If you want an RFC 3161 timestamp, pass a timestamp server:
+
+```powershell
+.\scripts\Build-Installer.ps1 -SignAuthenticode `
+    -TimestampUrl http://timestamp.digicert.com
+```
+
+For public production distribution, replace the self-signed certificate with a
+real code-signing certificate from a trusted CA or from your CI secret store.
+Verify release artifacts before publishing:
+
+```powershell
+signtool verify /pa /v src\GreenroomConnector.Installer\bin\Release\GreenroomConnector-de-DE.msi
+signtool verify /pa /v src\GreenroomConnector.Installer\bin\Release\GreenroomConnector-en-US.msi
+```
 
 ## Silent install (once the MSI is built)
 

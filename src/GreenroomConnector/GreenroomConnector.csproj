@@ -140,7 +140,6 @@
     <Compile Include="ThisAddIn.cs">
       <SubType>Code</SubType>
     </Compile>
-    <None Include="GreenroomConnector_TemporaryKey.pfx" />
     <None Include="ThisAddIn.Designer.xml">
       <DependentUpon>ThisAddIn.cs</DependentUpon>
     </None>
@@ -210,12 +209,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <SignManifests>true</SignManifests>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ManifestKeyFile>GreenroomConnector_TemporaryKey.pfx</ManifestKeyFile>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ManifestCertificateThumbprint>7C1CF8795C31BA7C434FF9BA8D01721AE0B1A3B2</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>$(GrcSigningCertificateThumbprint)</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>Resources\AppIcon.ico</ApplicationIcon>
@@ -239,6 +233,43 @@
   </PropertyGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\OfficeTools\Microsoft.VisualStudio.Tools.Office.targets" Condition="'$(VSToolsPath)' != ''" />
+
+  <Target Name="ValidateManifestSigningCertificate"
+          BeforeTargets="ResolveKeySource"
+          Condition="'$(SignManifests)' == 'true' and '$(ManifestCertificateThumbprint)' == ''">
+    <Error Text="GrcSigningCertificateThumbprint is not set. Run scripts\New-SigningCertificate.ps1 once, or set the property in Directory.Build.local.props." />
+  </Target>
+
+  <PropertyGroup>
+    <GrcTimestampUrl Condition="'$(GrcTimestampUrl)' == ''"></GrcTimestampUrl>
+    <GrcMagePath Condition="'$(GrcMagePath)' == ''">$(MSBuildProgramFiles32)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8 Tools\mage.exe</GrcMagePath>
+  </PropertyGroup>
+
+  <Target Name="SignAddInAssembly"
+          AfterTargets="CopyFilesToOutputDirectory"
+          BeforeTargets="VisualStudioForApplicationsBuild"
+          Condition="'$(GrcAuthenticodeSign)' == 'true'">
+    <Error Text="GrcSignToolPath is required when GrcAuthenticodeSign=true."
+           Condition="'$(GrcSignToolPath)' == ''" />
+    <Error Text="GrcSigningCertificateThumbprint is required when GrcAuthenticodeSign=true."
+           Condition="'$(GrcSigningCertificateThumbprint)' == ''" />
+    <Exec Command="&quot;$(GrcSignToolPath)&quot; sign /fd SHA256 /sha1 $(GrcSigningCertificateThumbprint) /tr &quot;$(GrcTimestampUrl)&quot; /td SHA256 &quot;$(TargetPath)&quot;"
+          Condition="'$(GrcTimestampUrl)' != ''" />
+    <Exec Command="&quot;$(GrcSignToolPath)&quot; sign /fd SHA256 /sha1 $(GrcSigningCertificateThumbprint) &quot;$(TargetPath)&quot;"
+          Condition="'$(GrcTimestampUrl)' == ''" />
+  </Target>
+
+  <Target Name="SetDeploymentManifestPublisher"
+          AfterTargets="VisualStudioForApplicationsBuild"
+          Condition="'$(SignManifests)' == 'true' and '$(ManifestCertificateThumbprint)' != ''">
+    <Error Text="mage.exe was not found. Set GrcMagePath to the full mage.exe path."
+           Condition="!Exists('$(GrcMagePath)')" />
+    <Exec Command="&quot;$(GrcMagePath)&quot; -Update &quot;$(OutDir)$(DeploymentManifestFileName)&quot; -Name &quot;$(ProductName)&quot; -Publisher &quot;$(PublisherName)&quot; -AppManifest &quot;$(OutDir)$(ApplicationManifestFileName)&quot;" />
+    <Exec Command="&quot;$(GrcMagePath)&quot; -Sign &quot;$(OutDir)$(DeploymentManifestFileName)&quot; -CertHash $(ManifestCertificateThumbprint) -Algorithm sha256RSA -TimeStampUri &quot;$(GrcTimestampUrl)&quot;"
+          Condition="'$(GrcTimestampUrl)' != ''" />
+    <Exec Command="&quot;$(GrcMagePath)&quot; -Sign &quot;$(OutDir)$(DeploymentManifestFileName)&quot; -CertHash $(ManifestCertificateThumbprint) -Algorithm sha256RSA"
+          Condition="'$(GrcTimestampUrl)' == ''" />
+  </Target>
 
   <!-- Generates the identity assembly attributes from /Directory.Build.props
        and feeds the resulting .cs file into the regular Compile itemgroup;

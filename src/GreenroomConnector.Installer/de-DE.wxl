@@ -4,44 +4,45 @@
 
   <!-- Built-in WixUI overrides (German is shipped as resource by WiX 4 itself,
        but we override branded strings to keep the wording consistent). -->
-  <String Id="ProductName" Overridable="yes">Greenroom Connector</String>
+  <String Id="ProductName" Overridable="yes" Value="Greenroom Connector" />
 
   <!-- Common -->
-  <String Id="GrcWizardCaption">[ProductName] Setup</String>
-  <String Id="GrcRequired">(erforderlich)</String>
-  <String Id="GrcOptional">(optional)</String>
+  <String Id="GrcWizardCaption" Value="[ProductName] Setup" />
+  <String Id="GrcRequired" Value="(erforderlich)" />
+  <String Id="GrcOptional" Value="(optional)" />
 
   <!-- Server (GREENLIGHTURL) -->
-  <String Id="GrcServerTitle">{\WixUI_Font_Title}Greenlight-Server</String>
-  <String Id="GrcServerDescription">URL des BigBlueButton-Greenlight-Servers, an dem sich die Nutzer anmelden.</String>
-  <String Id="GrcServerUrlLabel">&amp;Server-URL:</String>
-  <String Id="GrcServerUrlHint">Beispiel: https://bbb.example.com — Loopback-Adressen (localhost, 127.0.0.1) sind für lokale Test-Stacks erlaubt, sonst ist HTTPS Pflicht.</String>
-  <String Id="GrcServerUrlEmpty">Bitte gib die Greenlight-Server-URL ein.</String>
-  <String Id="GrcServerUrlInvalid">Die eingegebene Adresse ist keine gültige URL. Sie muss mit https:// (oder http:// für Loopback) beginnen.</String>
+  <String Id="GrcServerTitle" Value="{\WixUI_Font_Title}Greenlight-Server" />
+  <String Id="GrcServerDescription" Value="URL des BigBlueButton-Greenlight-Servers, an dem sich die Nutzer anmelden." />
+  <String Id="GrcServerUrlLabel" Value="&amp;Server-URL:" />
+  <String Id="GrcServerUrlHint" Value="Beispiel: https://bbb.example.com - Loopback-Adressen (localhost, 127.0.0.1) sind fuer lokale Test-Stacks erlaubt, sonst ist HTTPS Pflicht." />
+  <String Id="GrcServerUrlEmpty" Value="Bitte gib die Greenlight-Server-URL ein." />
+  <String Id="GrcServerUrlInvalid" Value="Die eingegebene Adresse ist keine gueltige URL. Sie muss mit https:// (oder http:// fuer Loopback) beginnen." />
+  <String Id="GrcPrintUnavailable" Value="Das Drucken der Lizenz ist in diesem Installer nicht verfuegbar." />
 
   <!-- Locale &amp; Location -->
-  <String Id="GrcLocaleTitle">{\WixUI_Font_Title}Sprache und Termin</String>
-  <String Id="GrcLocaleDescription">Sprache der Add-in-Oberfläche und optionaler Standort-Text für neue Termine.</String>
-  <String Id="GrcLocaleLanguageLabel">&amp;Anzeigesprache:</String>
-  <String Id="GrcLocaleLanguageAuto">Automatisch (Office-Sprache)</String>
-  <String Id="GrcLocaleLanguageDe">Deutsch</String>
-  <String Id="GrcLocaleLanguageEn">Englisch</String>
-  <String Id="GrcLocaleLocationLabel">Standort-&amp;Text (optional):</String>
-  <String Id="GrcLocaleLocationHint">Wird in das Feld „Ort" eines neuen Termins eingetragen, falls leer. Der Platzhalter {room} wird durch den Raumnamen ersetzt.</String>
+  <String Id="GrcLocaleTitle" Value="{\WixUI_Font_Title}Sprache und Termin" />
+  <String Id="GrcLocaleDescription" Value="Sprache der Add-in-Oberflaeche und optionaler Standort-Text fuer neue Termine." />
+  <String Id="GrcLocaleLanguageLabel" Value="&amp;Anzeigesprache:" />
+  <String Id="GrcLocaleLanguageAuto" Value="Automatisch (Office-Sprache)" />
+  <String Id="GrcLocaleLanguageDe" Value="Deutsch" />
+  <String Id="GrcLocaleLanguageEn" Value="Englisch" />
+  <String Id="GrcLocaleLocationLabel" Value="Standort-&amp;Text (optional):" />
+  <String Id="GrcLocaleLocationHint" Value="Wird in das Feld Ort eines neuen Termins eingetragen, falls leer. Der Platzhalter {room} wird durch den Raumnamen ersetzt." />
 
   <!-- Dial-In -->
-  <String Id="GrcDialInTitle">{\WixUI_Font_Title}Telefon-Einwahl</String>
-  <String Id="GrcDialInDescription">Optionaler Hinweis mit Einwahlnummer im Termin-Body.</String>
-  <String Id="GrcDialInShowLabel">Einwahl-&amp;Hinweis im Termin anzeigen</String>
-  <String Id="GrcDialInNumberLabel">&amp;Einwahlnummer:</String>
-  <String Id="GrcDialInNumberHint">Beispiel: +49 30 1234 5678. Wird in den lokalisierten Einwahltext eingesetzt.</String>
+  <String Id="GrcDialInTitle" Value="{\WixUI_Font_Title}Telefon-Einwahl" />
+  <String Id="GrcDialInDescription" Value="Optionaler Hinweis mit Einwahlnummer im Termin-Body." />
+  <String Id="GrcDialInShowLabel" Value="Einwahl-&amp;Hinweis im Termin anzeigen" />
+  <String Id="GrcDialInNumberLabel" Value="&amp;Einwahlnummer:" />
+  <String Id="GrcDialInNumberHint" Value="Beispiel: +49 30 1234 5678. Wird in den lokalisierten Einwahltext eingesetzt." />
 
   <!-- Advanced -->
-  <String Id="GrcAdvancedTitle">{\WixUI_Font_Title}Erweiterte Einstellungen</String>
-  <String Id="GrcAdvancedDescription">Diagnose-Optionen. Standardmäßig deaktiviert.</String>
-  <String Id="GrcAdvancedDebugLabel">Ausführliches &amp;Debug-Log aktivieren</String>
-  <String Id="GrcAdvancedDebugHint">Schreibt vollständige HTTP-Antworten und Stacktraces nach %LocalAppData%\GreenroomConnector\debug.log. Nur zur Fehlersuche aktivieren — die Datei kann sensible Inhalte enthalten und schnell wachsen.</String>
+  <String Id="GrcAdvancedTitle" Value="{\WixUI_Font_Title}Erweiterte Einstellungen" />
+  <String Id="GrcAdvancedDescription" Value="Diagnose-Optionen. Standardmaessig deaktiviert." />
+  <String Id="GrcAdvancedDebugLabel" Value="Ausfuehrliches &amp;Debug-Log aktivieren" />
+  <String Id="GrcAdvancedDebugHint" Value="Schreibt vollstaendige HTTP-Antworten und Stacktraces nach %LocalAppData%\GreenroomConnector\debug.log. Nur zur Fehlersuche aktivieren - die Datei kann sensible Inhalte enthalten und schnell wachsen." />
 
   <!-- ExitDialog -->
-  <String Id="GrcExitNote" Overridable="yes">Greenroom Connector wurde installiert. Starte Outlook neu, um das Add-in zu laden.</String>
+  <String Id="GrcExitNote" Overridable="yes" Value="Greenroom Connector wurde installiert. Starte Outlook neu, um das Add-in zu laden." />
 </WixLocalization>

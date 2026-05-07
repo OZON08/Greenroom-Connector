@@ -30,7 +30,7 @@
     <!-- Each property has a RegistrySearch so Modify/Repair pre-fills the wizard
          from HKLM. AppSearch only overwrites when the property hasn't been set on
          the command line, so silent installs (msiexec /qn ...) keep their values. -->
-    <Property Id="GREENLIGHTURL" Secure="yes">
+    <Property Id="GREENLIGHTURL" Value="https://" Secure="yes">
       <RegistrySearch Id="SrcGreenlightUrl" Root="HKLM" Key="SOFTWARE\GreenroomConnector" Name="GreenlightUrl" Type="raw" />
     </Property>
     <Property Id="LANGUAGE" Value="auto" Secure="yes">
@@ -60,12 +60,19 @@
       <RegistrySearch Id="SrcDebugLogging" Root="HKLM" Key="SOFTWARE\GreenroomConnector" Name="DebugLogging" Type="raw" />
     </Property>
 
-    <!-- Require GREENLIGHTURL at install time (skippable for repair via REINSTALLMODE). -->
-    <Launch Condition="GREENLIGHTURL OR Installed"
+    <!-- Require GREENLIGHTURL before non-interactive installs. Full UI installs collect it in GrcServerDlg. -->
+    <Launch Condition="Installed OR UILevel = 5 OR (GREENLIGHTURL AND GREENLIGHTURL &lt;&gt; &quot;https://&quot; AND GREENLIGHTURL &lt;&gt; &quot;http://&quot;)"
             Message="GREENLIGHTURL property is required. Example: msiexec /i GreenroomConnector.msi /qn GREENLIGHTURL=https://bbb.example.com" />
 
     <StandardDirectory Id="ProgramFiles64Folder">
-      <Directory Id="INSTALLFOLDER" Name="Greenroom Connector" />
+      <Directory Id="INSTALLFOLDER" Name="Greenroom Connector">
+        <Directory Id="AddInDeFolder" Name="de" />
+        <Directory Id="AddInRuntimesFolder" Name="runtimes">
+          <Directory Id="AddInWinX64Folder" Name="win-x64">
+            <Directory Id="AddInWinX64NativeFolder" Name="native" />
+          </Directory>
+        </Directory>
+      </Directory>
     </StandardDirectory>
 
     <Feature Id="Main" Title="Greenroom Connector" Level="1">
@@ -111,6 +118,34 @@
       <Component Id="AddInDllManifest" Guid="A1B2C3D4-A001-4000-8000-000000000004">
         <File Id="AddInDllManifestFile"
               Source="$(var.GreenroomConnector.TargetDir)GreenroomConnector.dll.manifest"
+              KeyPath="yes" />
+      </Component>
+      <Component Id="AddInVstoUtilities" Guid="A1B2C3D4-A001-4000-8000-000000000005">
+        <File Id="MicrosoftOfficeToolsCommonUtilities"
+              Source="$(var.GreenroomConnector.TargetDir)Microsoft.Office.Tools.Common.v4.0.Utilities.dll"
+              KeyPath="yes" />
+        <File Id="MicrosoftOfficeToolsOutlookUtilities"
+              Source="$(var.GreenroomConnector.TargetDir)Microsoft.Office.Tools.Outlook.v4.0.Utilities.dll" />
+      </Component>
+      <Component Id="AddInPackageDependencies" Guid="A1B2C3D4-A001-4000-8000-000000000006">
+        <File Id="NewtonsoftJson"
+              Source="$(var.GreenroomConnector.TargetDir)Newtonsoft.Json.dll"
+              KeyPath="yes" />
+        <File Id="MicrosoftWebWebView2Core"
+              Source="$(var.GreenroomConnector.TargetDir)Microsoft.Web.WebView2.Core.dll" />
+        <File Id="MicrosoftWebWebView2WinForms"
+              Source="$(var.GreenroomConnector.TargetDir)Microsoft.Web.WebView2.WinForms.dll" />
+        <File Id="MicrosoftWebWebView2Wpf"
+              Source="$(var.GreenroomConnector.TargetDir)Microsoft.Web.WebView2.Wpf.dll" />
+      </Component>
+      <Component Id="AddInDeSatelliteAssembly" Directory="AddInDeFolder" Guid="A1B2C3D4-A001-4000-8000-000000000007">
+        <File Id="AddInDeResources"
+              Source="$(var.GreenroomConnector.TargetDir)de\GreenroomConnector.resources.dll"
+              KeyPath="yes" />
+      </Component>
+      <Component Id="AddInWebView2LoaderX64" Directory="AddInWinX64NativeFolder" Guid="A1B2C3D4-A001-4000-8000-000000000008">
+        <File Id="WebView2LoaderX64"
+              Source="$(var.GreenroomConnector.TargetDir)runtimes\win-x64\native\WebView2Loader.dll"
               KeyPath="yes" />
       </Component>
     </ComponentGroup>

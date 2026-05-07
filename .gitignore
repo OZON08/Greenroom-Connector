@@ -22,6 +22,7 @@ project.fragment.lock.json
 # VSTO signing
 *_TemporaryKey.pfx
 *.snk
+Directory.Build.local.props
 
 # WiX intermediate
 *.wixobj
