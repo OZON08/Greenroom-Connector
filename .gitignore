@@ -39,3 +39,6 @@ Thumbs.db
 
 # Claude Code per-user overrides (shared settings.json is fine to commit)
 .claude/settings.local.json
+
+# Local agent memory/context exports
+AGENTS.md
