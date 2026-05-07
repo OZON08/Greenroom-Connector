@@ -152,6 +152,8 @@ The wrapping text around the dial-in number is translatable and lives in
   the native reminder Join button lights up in Outlook Web / new Outlook /
   mobile)
 - Optional WPF / Fluent rewrite of the picker for a more native Win11 feel
+- Pin rooms as favorites at the top of the picker (per-user, persisted
+  locally) so frequently used rooms stay one click away
 
 ## Development
 
