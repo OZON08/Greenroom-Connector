@@ -222,6 +222,40 @@
   </PropertyGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\OfficeTools\Microsoft.VisualStudio.Tools.Office.targets" Condition="'$(VSToolsPath)' != ''" />
+
+  <!-- Generates the identity assembly attributes from /Directory.Build.props
+       and feeds the resulting .cs file into the regular Compile itemgroup;
+       the file lives in obj/ (already gitignored). AssemblyInfo.cs
+       intentionally omits these attributes — duplicate-attribute compilation
+       errors would result otherwise. -->
+  <Target Name="GenerateAssemblyVersionInfo" BeforeTargets="CoreCompile">
+    <ItemGroup>
+      <_GeneratedAttrs Include="System.Reflection.AssemblyVersionAttribute">
+        <_Parameter1>$(GrcVersion)</_Parameter1>
+      </_GeneratedAttrs>
+      <_GeneratedAttrs Include="System.Reflection.AssemblyFileVersionAttribute">
+        <_Parameter1>$(GrcVersion)</_Parameter1>
+      </_GeneratedAttrs>
+      <_GeneratedAttrs Include="System.Reflection.AssemblyCompanyAttribute">
+        <_Parameter1>$(GrcPublisherName)</_Parameter1>
+      </_GeneratedAttrs>
+      <_GeneratedAttrs Include="System.Reflection.AssemblyProductAttribute">
+        <_Parameter1>$(GrcProductName)</_Parameter1>
+      </_GeneratedAttrs>
+      <_GeneratedAttrs Include="System.Reflection.AssemblyCopyrightAttribute">
+        <_Parameter1>$(GrcCopyright)</_Parameter1>
+      </_GeneratedAttrs>
+      <_GeneratedAttrs Include="System.Reflection.AssemblyDescriptionAttribute">
+        <_Parameter1>$(GrcDescription)</_Parameter1>
+      </_GeneratedAttrs>
+    </ItemGroup>
+    <WriteCodeFragment AssemblyAttributes="@(_GeneratedAttrs)"
+                       Language="C#"
+                       OutputDirectory="$(IntermediateOutputPath)"
+                       OutputFile="AssemblyVersionInfo.cs">
+      <Output TaskParameter="OutputFile" ItemName="Compile" />
+    </WriteCodeFragment>
+  </Target>
   <ProjectExtensions>
     <VisualStudio>
       <FlavorProperties GUID="{BAA0C2D2-18E2-41B9-852F-F413020CAA33}">

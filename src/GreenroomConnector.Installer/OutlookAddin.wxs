@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<?include Variables.generated.wxi ?>
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
 
   <!-- VSTO add-in registration (per-machine, HKLM).
@@ -10,10 +11,11 @@
       <Component Id="OutlookAddinRegistration" Guid="A1B2C3D4-C001-4000-8000-000000000001">
         <RegistryKey Root="HKLM"
                      Key="SOFTWARE\Microsoft\Office\Outlook\Addins\GreenroomConnector">
+          <!-- Surfaced in Outlook → File → Options → Add-ins → COM Add-ins. -->
           <RegistryValue Type="string" Name="Description"
-                         Value="Greenroom Connector — inserts Greenlight / BigBlueButton meeting links into Outlook appointments." />
+                         Value="$(var.Description)" />
           <RegistryValue Type="string" Name="FriendlyName"
-                         Value="Greenroom Connector" />
+                         Value="$(var.ProductName)" />
           <RegistryValue Type="integer" Name="LoadBehavior" Value="3" />
           <RegistryValue Type="string" Name="Manifest"
                          Value="file:///[INSTALLFOLDER]GreenroomConnector.vsto|vstolocal"

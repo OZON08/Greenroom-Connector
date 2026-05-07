@@ -1,0 +1,30 @@
+<Project>
+
+  <!--
+    Single source of truth for product identity and version. Properties are
+    prefixed with "Grc" so WixToolset.Sdk does not pick them up as standard
+    MSBuild identity properties (<Version>, <Description>, <Copyright> etc.)
+    and recompute the wixproj's internal Project Configuration name — that
+    breaks the SLN's Debug|Any CPU mapping (error MSB4126:
+    "configuration ... NoVariablesDefault").
+
+    Consumers:
+      - src/GreenroomConnector/GreenroomConnector.csproj
+        Generates obj/.../AssemblyVersionInfo.cs from these properties via a
+        WriteCodeFragment target. AssemblyInfo.cs holds the constants.
+      - src/GreenroomConnector.Installer/GreenroomConnector.Installer.wixproj
+        Generates Variables.generated.wxi next to the WXS files; both
+        Package.wxs and OutlookAddin.wxs <?include?> it and read the values
+        as $(var.Version), $(var.PublisherName), $(var.ProductName),
+        $(var.Description). The WXI keeps the unprefixed names so the WXS
+        side stays terse.
+  -->
+  <PropertyGroup>
+    <GrcVersion>1.0.0.0</GrcVersion>
+    <GrcPublisherName>OZON08</GrcPublisherName>
+    <GrcProductName>Greenroom Connector</GrcProductName>
+    <GrcCopyright>Copyright © 2026 OZON08</GrcCopyright>
+    <GrcDescription>Inserts a join link for one of your Greenlight / BigBlueButton rooms into an Outlook appointment. Fetches the room list live from your Greenlight server via the Outlook ribbon, hosts the Greenlight / Keycloak (OIDC) sign-in in an embedded WebView2, and optionally adds a phone dial-in section. Sign-out performs an RP-initiated single-logout against the IdP. © 2026 OZON08, MIT license.</GrcDescription>
+  </PropertyGroup>
+
+</Project>

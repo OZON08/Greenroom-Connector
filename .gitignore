@@ -27,6 +27,7 @@ project.fragment.lock.json
 *.wixobj
 *.wixpdb
 *.wixlib
+Variables.generated.wxi
 
 # Rider / ReSharper
 .idea/
