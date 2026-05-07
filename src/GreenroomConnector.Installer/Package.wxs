@@ -27,23 +27,38 @@
              DIALINNUMBER="+49 30 1234 5678"
              DEBUGLOGGING=false
     -->
-    <Property Id="GREENLIGHTURL" Secure="yes" />
-    <Property Id="LANGUAGE" Value="auto" Secure="yes" />
+    <!-- Each property has a RegistrySearch so Modify/Repair pre-fills the wizard
+         from HKLM. AppSearch only overwrites when the property hasn't been set on
+         the command line, so silent installs (msiexec /qn ...) keep their values. -->
+    <Property Id="GREENLIGHTURL" Secure="yes">
+      <RegistrySearch Id="SrcGreenlightUrl" Root="HKLM" Key="SOFTWARE\GreenroomConnector" Name="GreenlightUrl" Type="raw" />
+    </Property>
+    <Property Id="LANGUAGE" Value="auto" Secure="yes">
+      <RegistrySearch Id="SrcLanguage" Root="HKLM" Key="SOFTWARE\GreenroomConnector" Name="Language" Type="raw" />
+    </Property>
     <!-- Optional. Written into the appointment Location field when empty.
          Supports the placeholder {room} which is replaced with the room name. -->
-    <Property Id="LOCATIONTEXT" Secure="yes" />
+    <Property Id="LOCATIONTEXT" Secure="yes">
+      <RegistrySearch Id="SrcLocationText" Root="HKLM" Key="SOFTWARE\GreenroomConnector" Name="LocationText" Type="raw" />
+    </Property>
     <!-- Toggle ("true"/"false") for the localized dial-in block defined in
          Strings.Meeting_DialIn. The wrapping text lives in the resx; this
          flag plus DIALINNUMBER below control content. Default: false. -->
-    <Property Id="SHOWDIALIN" Value="false" Secure="yes" />
+    <Property Id="SHOWDIALIN" Value="false" Secure="yes">
+      <RegistrySearch Id="SrcShowDialIn" Root="HKLM" Key="SOFTWARE\GreenroomConnector" Name="ShowDialIn" Type="raw" />
+    </Property>
     <!-- Deployment-specific dial-in phone number, substituted into the
          {number} placeholder of Strings.Meeting_DialIn. -->
-    <Property Id="DIALINNUMBER" Secure="yes" />
+    <Property Id="DIALINNUMBER" Secure="yes">
+      <RegistrySearch Id="SrcDialInNumber" Root="HKLM" Key="SOFTWARE\GreenroomConnector" Name="DialInNumber" Type="raw" />
+    </Property>
     <!-- Toggle ("true"/"false") for the verbose file logger under
          %LocalAppData%\GreenroomConnector\debug.log. Off by default; the log
          records full HTTP response bodies and exception stacks, so it is a
          privacy + disk-growth concern when always on. -->
-    <Property Id="DEBUGLOGGING" Value="false" Secure="yes" />
+    <Property Id="DEBUGLOGGING" Value="false" Secure="yes">
+      <RegistrySearch Id="SrcDebugLogging" Root="HKLM" Key="SOFTWARE\GreenroomConnector" Name="DebugLogging" Type="raw" />
+    </Property>
 
     <!-- Require GREENLIGHTURL at install time (skippable for repair via REINSTALLMODE). -->
     <Launch Condition="GREENLIGHTURL OR Installed"
@@ -58,6 +73,18 @@
       <ComponentGroupRef Id="RegistryComponents" />
       <ComponentGroupRef Id="OutlookAddinComponents" />
     </Feature>
+
+    <!-- Custom wizard UI defined in UI.wxs. -->
+    <UIRef Id="GrcWizardUI" />
+
+    <!-- Branding: license shown in LicenseAgreementDlg, banner & dialog bitmaps for the wizard. -->
+    <WixVariable Id="WixUILicenseRtf" Value="assets\license.rtf" />
+    <WixVariable Id="WixUIBannerBmp"  Value="assets\BannerBitmap.bmp" />
+    <WixVariable Id="WixUIDialogBmp"  Value="assets\DialogBitmap.bmp" />
+
+    <!-- Add/Remove Programs icon. -->
+    <Icon Id="AppIcon.ico" SourceFile="assets\AppIcon.ico" />
+    <Property Id="ARPPRODUCTICON" Value="AppIcon.ico" />
 
   </Package>
 

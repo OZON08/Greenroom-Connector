@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WixLocalization Culture="en-US" Codepage="1252"
+                 xmlns="http://wixtoolset.org/schemas/v4/wxl">
+
+  <String Id="ProductName" Overridable="yes">Greenroom Connector</String>
+
+  <!-- Common -->
+  <String Id="GrcWizardCaption">[ProductName] Setup</String>
+  <String Id="GrcRequired">(required)</String>
+  <String Id="GrcOptional">(optional)</String>
+
+  <!-- Server (GREENLIGHTURL) -->
+  <String Id="GrcServerTitle">{\WixUI_Font_Title}Greenlight server</String>
+  <String Id="GrcServerDescription">URL of the BigBlueButton Greenlight server users will sign in to.</String>
+  <String Id="GrcServerUrlLabel">&amp;Server URL:</String>
+  <String Id="GrcServerUrlHint">Example: https://bbb.example.com — loopback addresses (localhost, 127.0.0.1) are accepted for local test stacks; otherwise HTTPS is required.</String>
+  <String Id="GrcServerUrlEmpty">Please enter the Greenlight server URL.</String>
+  <String Id="GrcServerUrlInvalid">The address entered is not a valid URL. It must start with https:// (or http:// for loopback).</String>
+
+  <!-- Locale &amp; Location -->
+  <String Id="GrcLocaleTitle">{\WixUI_Font_Title}Language and appointment</String>
+  <String Id="GrcLocaleDescription">UI language for the add-in and optional location text for new appointments.</String>
+  <String Id="GrcLocaleLanguageLabel">&amp;Display language:</String>
+  <String Id="GrcLocaleLanguageAuto">Automatic (Office language)</String>
+  <String Id="GrcLocaleLanguageDe">German</String>
+  <String Id="GrcLocaleLanguageEn">English</String>
+  <String Id="GrcLocaleLocationLabel">Location &amp;text (optional):</String>
+  <String Id="GrcLocaleLocationHint">Written into the appointment Location field when empty. The placeholder {room} is replaced with the room name.</String>
+
+  <!-- Dial-In -->
+  <String Id="GrcDialInTitle">{\WixUI_Font_Title}Phone dial-in</String>
+  <String Id="GrcDialInDescription">Optional dial-in instructions in the appointment body.</String>
+  <String Id="GrcDialInShowLabel">Show dial-in &amp;hint in appointment</String>
+  <String Id="GrcDialInNumberLabel">&amp;Dial-in number:</String>
+  <String Id="GrcDialInNumberHint">Example: +49 30 1234 5678. Substituted into the localized dial-in text.</String>
+
+  <!-- Advanced -->
+  <String Id="GrcAdvancedTitle">{\WixUI_Font_Title}Advanced settings</String>
+  <String Id="GrcAdvancedDescription">Diagnostic options. Disabled by default.</String>
+  <String Id="GrcAdvancedDebugLabel">Enable verbose &amp;debug log</String>
+  <String Id="GrcAdvancedDebugHint">Writes full HTTP responses and stack traces to %LocalAppData%\GreenroomConnector\debug.log. Only enable for troubleshooting — the file can contain sensitive content and grow quickly.</String>
+
+  <!-- ExitDialog -->
+  <String Id="GrcExitNote" Overridable="yes">Greenroom Connector has been installed. Restart Outlook to load the add-in.</String>
+</WixLocalization>

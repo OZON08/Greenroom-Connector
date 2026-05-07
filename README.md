@@ -75,10 +75,13 @@ the attendee side.
   session in the user's browser ends with the add-in session
 - **HTTPS-only out of the box** — non-loopback `GreenlightUrl` values must
   use `https://`; the add-in refuses to send the session cookie in the clear
-- **Per-machine silent install** — WiX v4 MSI with public properties; deploy
-  via Group Policy / Intune without user interaction
-- **Localised UI** — German and English ship in the box; add more by dropping
-  a new `Strings.<culture>.resx` next to the existing ones
+- **Per-machine MSI, silent or interactive** — WiX v4 with a localized
+  setup wizard for desktop installs and public properties for silent
+  Group-Policy / Intune deployment; Modify/Repair pre-fills the wizard
+  from the existing registry config
+- **Localised UI** — both the add-in *and* the installer ship in German
+  and English; add more for the add-in by dropping a new
+  `Strings.<culture>.resx` next to the existing ones
 - **Brand-correct visuals** — Microsoft 365 Fluent button styling, brand
   blue accent, multi-size app icon (16/24/32/48/64/128 px)
 - **Dial-in section** is admin-controlled: text in resx (translatable),
@@ -88,11 +91,14 @@ the attendee side.
 
 > The signed MSI build is not yet automated — see
 > [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md) for the local build instructions.
+> The build produces one MSI per language: `GreenroomConnector-de-DE.msi`
+> and `GreenroomConnector-en-US.msi`.
 
-Once the MSI is available, deploy silently with:
+Pick the language MSI matching your users and either double-click for the
+interactive wizard, or roll out silently:
 
 ```powershell
-msiexec /i GreenroomConnector.msi /qn `
+msiexec /i GreenroomConnector-de-DE.msi /qn `
     GREENLIGHTURL=https://your-greenlight.example.org `
     LANGUAGE=auto `
     LOCATIONTEXT="BigBlueButton-Konferenz" `
@@ -114,7 +120,7 @@ under `HKEY_CURRENT_USER\Software\GreenroomConnector`.
 
 | Value           | Purpose | Example |
 |-----------------|---------|---------|
-| `GreenlightUrl` | Base URL of your Greenlight instance. Must be `https://` unless it points at a loopback host (`localhost`, `127.0.0.1`, `::1`). | `https://meet.example.org` |
+| `GreenlightUrl` | Base URL of your Greenlight instance. Must be `https://` unless it points at a loopback host. `127.0.0.1` and `[::1]` are accepted but rewritten to `localhost` at runtime so OIDC redirect URIs always match. | `https://meet.example.org` |
 | `Language`      | UI culture (`auto`, `de`, `en`) | `auto` |
 | `LocationText`  | Template for the `Location` field. `{room}` is replaced with the room name. Empty = leave Location untouched. | `BigBlueButton: {room}` |
 | `ShowDialIn`    | `true` / `false` toggle for the dial-in section | `true` |

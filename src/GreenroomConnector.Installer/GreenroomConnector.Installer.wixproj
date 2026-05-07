@@ -1,6 +1,9 @@
 <Project Sdk="WixToolset.Sdk/4.0.5">
   <PropertyGroup>
-    <OutputName>GreenroomConnector</OutputName>
+    <!-- Defaults to de-DE; override with /p:Cultures=en-US to build the English MSI.
+         scripts\Build-Installer.ps1 builds both languages back-to-back. -->
+    <Cultures Condition="'$(Cultures)' == ''">de-DE</Cultures>
+    <OutputName>GreenroomConnector-$(Cultures)</OutputName>
     <OutputType>Package</OutputType>
     <InstallerPlatform>x64</InstallerPlatform>
   </PropertyGroup>
@@ -33,6 +36,7 @@
 
   <ItemGroup>
     <PackageReference Include="WixToolset.Util.wixext" Version="4.0.5" />
+    <PackageReference Include="WixToolset.UI.wixext"   Version="4.0.5" />
   </ItemGroup>
 
   <ItemGroup>

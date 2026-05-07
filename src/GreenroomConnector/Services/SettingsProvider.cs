@@ -22,6 +22,14 @@ namespace GreenroomConnector.Services
                 if (uri.Scheme != Uri.UriSchemeHttps && !uri.IsLoopback) return null;
                 if (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps) return null;
 
+                // 127.0.0.1 / [::1] route to the same socket but Keycloak
+                // treats them as distinct origins from a "localhost"
+                // redirect_uri and rejects the OIDC callback.
+                if (uri.IsLoopback && !string.Equals(uri.Host, "localhost", StringComparison.OrdinalIgnoreCase))
+                {
+                    uri = new UriBuilder(uri) { Host = "localhost" }.Uri;
+                }
+
                 return uri;
             }
         }

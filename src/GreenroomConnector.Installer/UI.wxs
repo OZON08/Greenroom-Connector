@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
+     xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
+
+  <!-- Custom WixUI set: Welcome → License → Server → Locale → DialIn → Advanced → Verify → Progress → Exit.
+       For Modify/Repair, the maintenance flow branches into the same custom dialogs with values pre-populated
+       from HKLM (see Search.wxs). All visible strings come from loc/de-DE.wxl and loc/en-US.wxl. -->
+  <Fragment>
+    <UI Id="GrcWizardUI">
+      <TextStyle Id="WixUI_Font_Normal" FaceName="Tahoma" Size="8" />
+      <TextStyle Id="WixUI_Font_Bigger" FaceName="Tahoma" Size="12" />
+      <TextStyle Id="WixUI_Font_Title"  FaceName="Tahoma" Size="9" Bold="yes" />
+
+      <Property Id="DefaultUIFont" Value="WixUI_Font_Normal" />
+      <Property Id="WixUI_Mode"    Value="Custom" />
+
+      <!-- Standard dialogs we reuse from WixToolset.UI.wixext. -->
+      <DialogRef Id="ErrorDlg" />
+      <DialogRef Id="FatalError" />
+      <DialogRef Id="FilesInUse" />
+      <DialogRef Id="MsiRMFilesInUse" />
+      <DialogRef Id="PrepareDlg" />
+      <DialogRef Id="ProgressDlg" />
+      <DialogRef Id="ResumeDlg" />
+      <DialogRef Id="UserExit" />
+      <DialogRef Id="WelcomeDlg" />
+      <DialogRef Id="LicenseAgreementDlg" />
+      <DialogRef Id="VerifyReadyDlg" />
+      <DialogRef Id="ExitDialog" />
+      <DialogRef Id="MaintenanceWelcomeDlg" />
+      <DialogRef Id="MaintenanceTypeDlg" />
+      <DialogRef Id="CancelDlg" />
+
+      <!-- Welcome → License (fresh install) or → MaintenanceTypeDlg (existing install). -->
+      <Publish Dialog="WelcomeDlg" Control="Next" Event="NewDialog" Value="LicenseAgreementDlg" Condition="NOT Installed" />
+      <Publish Dialog="WelcomeDlg" Control="Next" Event="NewDialog" Value="VerifyReadyDlg"      Condition="Installed AND PATCH" />
+
+      <Publish Dialog="LicenseAgreementDlg" Control="Back" Event="NewDialog" Value="WelcomeDlg" />
+      <Publish Dialog="LicenseAgreementDlg" Control="Next" Event="NewDialog" Value="GrcServerDlg" Condition="LicenseAccepted = &quot;1&quot;" />
+
+      <Publish Dialog="GrcServerDlg" Control="Back" Event="NewDialog" Value="LicenseAgreementDlg" Condition="NOT Installed" />
+      <Publish Dialog="GrcServerDlg" Control="Back" Event="NewDialog" Value="MaintenanceTypeDlg"  Condition="Installed" />
+      <!-- URL must start with http:// or https:// (case-insensitive). The Add-in itself
+           rejects HTTP unless the host is loopback; we only do shape validation here. -->
+      <Publish Dialog="GrcServerDlg" Control="Next" Event="NewDialog"   Value="GrcLocaleDlg"
+               Condition="GREENLIGHTURL AND (GREENLIGHTURL ~&lt;&lt; &quot;http://&quot; OR GREENLIGHTURL ~&lt;&lt; &quot;https://&quot;)" />
+      <Publish Dialog="GrcServerDlg" Control="Next" Event="SpawnDialog" Value="GrcUrlEmptyDlg"
+               Condition="NOT GREENLIGHTURL" />
+      <Publish Dialog="GrcServerDlg" Control="Next" Event="SpawnDialog" Value="GrcUrlInvalidDlg"
+               Condition="GREENLIGHTURL AND NOT (GREENLIGHTURL ~&lt;&lt; &quot;http://&quot; OR GREENLIGHTURL ~&lt;&lt; &quot;https://&quot;)" />
+
+      <Publish Dialog="GrcLocaleDlg" Control="Back" Event="NewDialog" Value="GrcServerDlg" />
+      <Publish Dialog="GrcLocaleDlg" Control="Next" Event="NewDialog" Value="GrcDialInDlg" />
+
+      <Publish Dialog="GrcDialInDlg" Control="Back" Event="NewDialog" Value="GrcLocaleDlg" />
+      <Publish Dialog="GrcDialInDlg" Control="Next" Event="NewDialog" Value="GrcAdvancedDlg" />
+
+      <Publish Dialog="GrcAdvancedDlg" Control="Back" Event="NewDialog" Value="GrcDialInDlg" />
+      <Publish Dialog="GrcAdvancedDlg" Control="Next" Event="NewDialog" Value="VerifyReadyDlg" />
+
+      <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="GrcAdvancedDlg"   Condition="NOT Installed OR WixUI_InstallMode = &quot;Change&quot;" />
+      <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="MaintenanceTypeDlg" Condition="Installed AND WixUI_InstallMode &lt;&gt; &quot;Change&quot;" />
+
+      <Publish Dialog="MaintenanceWelcomeDlg" Control="Next" Event="NewDialog" Value="MaintenanceTypeDlg" />
+
+      <Publish Dialog="MaintenanceTypeDlg" Control="ChangeButton" Event="NewDialog"  Value="GrcServerDlg" />
+      <Publish Dialog="MaintenanceTypeDlg" Control="RepairButton" Event="NewDialog"  Value="VerifyReadyDlg" />
+      <Publish Dialog="MaintenanceTypeDlg" Control="RemoveButton" Event="NewDialog"  Value="VerifyReadyDlg" />
+      <Publish Dialog="MaintenanceTypeDlg" Control="Back"         Event="NewDialog"  Value="MaintenanceWelcomeDlg" />
+
+      <UIRef Id="WixUI_Common" />
+    </UI>
+  </Fragment>
+
+  <!-- ============================================================
+       Server URL dialog (GREENLIGHTURL)
+       ============================================================ -->
+  <Fragment>
+    <Dialog Id="GrcServerDlg" Width="370" Height="270" Title="!(loc.GrcWizardCaption)" NoMinimize="yes">
+      <Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0"  Width="370" Height="44" TabSkip="no" Text="!(bind.WixBanner)" />
+      <Control Id="BannerLine"   Type="Line"   X="0" Y="44" Width="370" Height="0" />
+      <Control Id="BottomLine"   Type="Line"   X="0" Y="234" Width="370" Height="0" />
+
+      <Control Id="Title"        Type="Text"   X="15" Y="6"  Width="290" Height="14" Transparent="yes" NoPrefix="yes" Text="!(loc.GrcServerTitle)" />
+      <Control Id="Description"  Type="Text"   X="25" Y="23" Width="290" Height="14" Transparent="yes" NoPrefix="yes" Text="!(loc.GrcServerDescription)" />
+
+      <Control Id="UrlLabel"     Type="Text"   X="20" Y="64"  Width="330" Height="10" Text="!(loc.GrcServerUrlLabel)" />
+      <Control Id="UrlEdit"      Type="Edit"   X="20" Y="78"  Width="330" Height="18" Property="GREENLIGHTURL" />
+      <Control Id="UrlHint"      Type="Text"   X="20" Y="104" Width="330" Height="60" NoPrefix="yes" Text="!(loc.GrcServerUrlHint)" />
+
+      <Control Id="Back"   Type="PushButton" X="180" Y="243" Width="56" Height="17"               Text="!(loc.WixUIBack)" />
+      <Control Id="Next"   Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="!(loc.WixUINext)" />
+      <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes"  Text="!(loc.WixUICancel)">
+        <Publish Event="SpawnDialog" Value="CancelDlg" />
+      </Control>
+    </Dialog>
+
+    <!-- Modal validation popups for the URL field. -->
+    <Dialog Id="GrcUrlEmptyDlg" Width="260" Height="85" Title="!(loc.GrcWizardCaption)" NoMinimize="yes">
+      <Control Id="Text" Type="Text"       X="15" Y="15" Width="230" Height="40" NoPrefix="yes" Text="!(loc.GrcServerUrlEmpty)" />
+      <Control Id="OK"   Type="PushButton" X="100" Y="60" Width="56" Height="17" Default="yes" Cancel="yes" Text="!(loc.WixUIOK)">
+        <Publish Event="EndDialog" Value="Return" />
+      </Control>
+    </Dialog>
+
+    <Dialog Id="GrcUrlInvalidDlg" Width="260" Height="100" Title="!(loc.GrcWizardCaption)" NoMinimize="yes">
+      <Control Id="Text" Type="Text"       X="15" Y="15" Width="230" Height="55" NoPrefix="yes" Text="!(loc.GrcServerUrlInvalid)" />
+      <Control Id="OK"   Type="PushButton" X="100" Y="75" Width="56" Height="17" Default="yes" Cancel="yes" Text="!(loc.WixUIOK)">
+        <Publish Event="EndDialog" Value="Return" />
+      </Control>
+    </Dialog>
+  </Fragment>
+
+  <!-- ============================================================
+       Locale & Location dialog (LANGUAGE, LOCATIONTEXT)
+       ============================================================ -->
+  <Fragment>
+    <Dialog Id="GrcLocaleDlg" Width="370" Height="270" Title="!(loc.GrcWizardCaption)" NoMinimize="yes">
+      <Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0"  Width="370" Height="44" TabSkip="no" Text="!(bind.WixBanner)" />
+      <Control Id="BannerLine"   Type="Line"   X="0" Y="44" Width="370" Height="0" />
+      <Control Id="BottomLine"   Type="Line"   X="0" Y="234" Width="370" Height="0" />
+
+      <Control Id="Title"        Type="Text"   X="15" Y="6"  Width="290" Height="14" Transparent="yes" NoPrefix="yes" Text="!(loc.GrcLocaleTitle)" />
+      <Control Id="Description"  Type="Text"   X="25" Y="23" Width="290" Height="14" Transparent="yes" NoPrefix="yes" Text="!(loc.GrcLocaleDescription)" />
+
+      <Control Id="LanguageLabel" Type="Text"     X="20" Y="60" Width="330" Height="10" Text="!(loc.GrcLocaleLanguageLabel)" />
+      <Control Id="LanguageCombo" Type="ComboBox" X="20" Y="73" Width="200" Height="60" Property="LANGUAGE" ComboList="yes">
+        <ComboBox Property="LANGUAGE">
+          <ListItem Value="auto" Text="!(loc.GrcLocaleLanguageAuto)" />
+          <ListItem Value="de"   Text="!(loc.GrcLocaleLanguageDe)" />
+          <ListItem Value="en"   Text="!(loc.GrcLocaleLanguageEn)" />
+        </ComboBox>
+      </Control>
+
+      <Control Id="LocationLabel" Type="Text" X="20" Y="115" Width="330" Height="10" Text="!(loc.GrcLocaleLocationLabel)" />
+      <Control Id="LocationEdit"  Type="Edit" X="20" Y="128" Width="330" Height="18" Property="LOCATIONTEXT" />
+      <Control Id="LocationHint"  Type="Text" X="20" Y="152" Width="330" Height="60" NoPrefix="yes" Text="!(loc.GrcLocaleLocationHint)" />
+
+      <Control Id="Back"   Type="PushButton" X="180" Y="243" Width="56" Height="17"               Text="!(loc.WixUIBack)" />
+      <Control Id="Next"   Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="!(loc.WixUINext)" />
+      <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes"  Text="!(loc.WixUICancel)">
+        <Publish Event="SpawnDialog" Value="CancelDlg" />
+      </Control>
+    </Dialog>
+  </Fragment>
+
+  <!-- ============================================================
+       Dial-In dialog (SHOWDIALIN, DIALINNUMBER)
+       ============================================================ -->
+  <Fragment>
+    <Dialog Id="GrcDialInDlg" Width="370" Height="270" Title="!(loc.GrcWizardCaption)" NoMinimize="yes">
+      <Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0"  Width="370" Height="44" TabSkip="no" Text="!(bind.WixBanner)" />
+      <Control Id="BannerLine"   Type="Line"   X="0" Y="44" Width="370" Height="0" />
+      <Control Id="BottomLine"   Type="Line"   X="0" Y="234" Width="370" Height="0" />
+
+      <Control Id="Title"        Type="Text"   X="15" Y="6"  Width="290" Height="14" Transparent="yes" NoPrefix="yes" Text="!(loc.GrcDialInTitle)" />
+      <Control Id="Description"  Type="Text"   X="25" Y="23" Width="290" Height="14" Transparent="yes" NoPrefix="yes" Text="!(loc.GrcDialInDescription)" />
+
+      <Control Id="ShowCheckbox" Type="CheckBox" X="20" Y="64" Width="330" Height="14" Property="SHOWDIALIN" CheckBoxValue="true" Text="!(loc.GrcDialInShowLabel)" />
+
+      <Control Id="NumberLabel" Type="Text" X="20" Y="92"  Width="330" Height="10" Text="!(loc.GrcDialInNumberLabel)">
+        <Condition Action="enable">SHOWDIALIN = "true"</Condition>
+        <Condition Action="disable">SHOWDIALIN &lt;&gt; "true"</Condition>
+      </Control>
+      <Control Id="NumberEdit"  Type="Edit" X="20" Y="106" Width="330" Height="18" Property="DIALINNUMBER">
+        <Condition Action="enable">SHOWDIALIN = "true"</Condition>
+        <Condition Action="disable">SHOWDIALIN &lt;&gt; "true"</Condition>
+      </Control>
+      <Control Id="NumberHint"  Type="Text" X="20" Y="132" Width="330" Height="40" NoPrefix="yes" Text="!(loc.GrcDialInNumberHint)" />
+
+      <Control Id="Back"   Type="PushButton" X="180" Y="243" Width="56" Height="17"               Text="!(loc.WixUIBack)" />
+      <Control Id="Next"   Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="!(loc.WixUINext)" />
+      <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes"  Text="!(loc.WixUICancel)">
+        <Publish Event="SpawnDialog" Value="CancelDlg" />
+      </Control>
+    </Dialog>
+  </Fragment>
+
+  <!-- ============================================================
+       Advanced dialog (DEBUGLOGGING)
+       ============================================================ -->
+  <Fragment>
+    <Dialog Id="GrcAdvancedDlg" Width="370" Height="270" Title="!(loc.GrcWizardCaption)" NoMinimize="yes">
+      <Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0"  Width="370" Height="44" TabSkip="no" Text="!(bind.WixBanner)" />
+      <Control Id="BannerLine"   Type="Line"   X="0" Y="44" Width="370" Height="0" />
+      <Control Id="BottomLine"   Type="Line"   X="0" Y="234" Width="370" Height="0" />
+
+      <Control Id="Title"        Type="Text"   X="15" Y="6"  Width="290" Height="14" Transparent="yes" NoPrefix="yes" Text="!(loc.GrcAdvancedTitle)" />
+      <Control Id="Description"  Type="Text"   X="25" Y="23" Width="290" Height="14" Transparent="yes" NoPrefix="yes" Text="!(loc.GrcAdvancedDescription)" />
+
+      <Control Id="DebugCheckbox" Type="CheckBox" X="20" Y="64" Width="330" Height="14" Property="DEBUGLOGGING" CheckBoxValue="true" Text="!(loc.GrcAdvancedDebugLabel)" />
+      <Control Id="DebugHint"     Type="Text"     X="20" Y="86" Width="330" Height="80" NoPrefix="yes" Text="!(loc.GrcAdvancedDebugHint)" />
+
+      <Control Id="Back"   Type="PushButton" X="180" Y="243" Width="56" Height="17"               Text="!(loc.WixUIBack)" />
+      <Control Id="Next"   Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="!(loc.WixUINext)" />
+      <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes"  Text="!(loc.WixUICancel)">
+        <Publish Event="SpawnDialog" Value="CancelDlg" />
+      </Control>
+    </Dialog>
+  </Fragment>
+
+</Wix>
