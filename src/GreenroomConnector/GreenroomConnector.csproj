@@ -220,14 +220,22 @@
   <PropertyGroup>
     <ApplicationIcon>Resources\AppIcon.ico</ApplicationIcon>
   </PropertyGroup>
-  <!-- VSTO manifest description.publisher and description.product. Without these
-       the Office targets default both to $(AssemblyName) ("GreenroomConnector"),
-       which Outlook then surfaces as the add-in's Publisher and FriendlyName.
-       Sourced from /Directory.Build.props so the values stay in sync with the
-       MSI registry entries and the assembly attributes. -->
+  <!-- VSTO identity surfaced by Outlook (HKCU registration + .vsto manifest):
+         - ProductName drives FriendlyName (-> $(FriendlyName) defaults to it).
+         - OfficeApplicationDescription becomes the Description in the registry
+           and in the application manifest's <description> element.
+         - PublisherName feeds the deployment manifest only along the Publish
+           path; the Build path defaults description.publisher to $(AssemblyName)
+           anyway, but we set it for consistency. The "Publisher" column in
+           Outlook ultimately reads the Authenticode signer of the signed .vsto,
+           so it stays at <None> until the manifest is signed with a trusted
+           code-signing cert.
+       All three values come from /Directory.Build.props so they stay in sync
+       with the MSI registry entries and the assembly attributes. -->
   <PropertyGroup>
     <PublisherName>$(GrcPublisherName)</PublisherName>
     <ProductName>$(GrcProductName)</ProductName>
+    <OfficeApplicationDescription>$(GrcDescription)</OfficeApplicationDescription>
   </PropertyGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\OfficeTools\Microsoft.VisualStudio.Tools.Office.targets" Condition="'$(VSToolsPath)' != ''" />
