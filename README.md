@@ -147,7 +147,6 @@ The wrapping text around the dial-in number is translatable and lives in
 
 ## Roadmap
 
-- Signed MSI build via GitHub Actions
 - Companion Outlook Web Add-in (registers as an Online-Meeting provider so
   the native reminder Join button lights up in Outlook Web / new Outlook /
   mobile)
