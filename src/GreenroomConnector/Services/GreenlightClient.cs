@@ -87,6 +87,24 @@ namespace GreenroomConnector.Services
             }
         }
 
+        internal static Dictionary<string, string> ParseConfigurations(string json)
+        {
+            var token = JToken.Parse(json);
+            var data = (token is JObject obj ? obj["data"] : token) as JObject ?? new JObject();
+            return data.ToObject<Dictionary<string, string>>() ?? new Dictionary<string, string>();
+        }
+
+        internal static string ExtractFriendlyId(string json)
+        {
+            var token = JToken.Parse(json);
+            var path = (token is JObject obj ? obj["data"]?.ToString() : null) ?? string.Empty;
+            // path = "/rooms/abc-def-ghi"
+            var segments = path.Trim('/').Split('/');
+            if (segments.Length < 2 || string.IsNullOrEmpty(segments[1]))
+                throw new InvalidOperationException("Unexpected room creation response: " + path);
+            return segments[1];
+        }
+
         private List<Room> ParseRooms(string json)
         {
             var token = JToken.Parse(json);

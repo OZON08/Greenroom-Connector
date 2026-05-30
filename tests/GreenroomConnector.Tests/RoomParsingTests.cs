@@ -1,4 +1,5 @@
 using System.Linq;
+using GreenroomConnector.Services;
 using Newtonsoft.Json.Linq;
 using Xunit;
 
@@ -65,6 +66,39 @@ namespace GreenroomConnector.Tests
             var token = JToken.Parse(body);
             Assert.NotNull(token["errors"]);
             Assert.Null(token["data"]);
+        }
+
+        // --- ParseConfigurations ---
+
+        [Fact]
+        public void ParseConfigurations_extracts_data_object()
+        {
+            var json = "{\"data\":{\"record\":\"optional\",\"glRequireAuthentication\":\"default_enabled\"}}";
+            var result = GreenlightClient.ParseConfigurations(json);
+            Assert.Equal("optional", result["record"]);
+            Assert.Equal("default_enabled", result["glRequireAuthentication"]);
+        }
+
+        [Fact]
+        public void ParseConfigurations_returns_empty_for_empty_data()
+        {
+            var result = GreenlightClient.ParseConfigurations("{\"data\":{}}");
+            Assert.Empty(result);
+        }
+
+        // --- ExtractFriendlyId ---
+
+        [Theory]
+        [InlineData("{\"data\":\"/rooms/abc-def-ghi\"}", "abc-def-ghi")]
+        [InlineData("{\"data\":\"/rooms/xyz-uvw-123\"}", "xyz-uvw-123")]
+        public void ExtractFriendlyId_parses_room_path(string json, string expected) =>
+            Assert.Equal(expected, GreenlightClient.ExtractFriendlyId(json));
+
+        [Fact]
+        public void ExtractFriendlyId_throws_for_malformed_path()
+        {
+            Assert.Throws<System.InvalidOperationException>(
+                () => GreenlightClient.ExtractFriendlyId("{\"data\":\"notapath\"}"));
         }
     }
 }
