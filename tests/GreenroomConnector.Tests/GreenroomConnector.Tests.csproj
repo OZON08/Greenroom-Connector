@@ -17,9 +17,13 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
-  <!-- Note: We don't reference the VSTO add-in project here because pulling in
-       Office interop assemblies into a test runner is painful. Tests target the
-       service layer by copying small, pure pieces or mirroring their logic.
-       For integration tests that must touch Outlook interop, use a separate
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\GreenroomConnector\GreenroomConnector.csproj" />
+  </ItemGroup>
+
+  <!-- The VSTO project reference is included because pure model/service classes
+       (e.g. RoomConfiguration, GreenlightClient parse helpers) are tested here.
+       Tests never invoke Office COM APIs, so loading the interop assemblies is
+       harmless. For tests that require live Outlook interop, use a separate
        project marked [Collection] with manual execution. -->
 </Project>
