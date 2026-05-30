@@ -87,6 +87,81 @@ namespace GreenroomConnector.Services
             }
         }
 
+        public async Task<Dictionary<string, string>> GetRoomsConfigurationsAsync()
+        {
+            using (var request = BuildRequest(HttpMethod.Get, "api/v1/rooms_configurations.json"))
+            using (var response = await Http.SendAsync(request).ConfigureAwait(false))
+            {
+                if (response.StatusCode == HttpStatusCode.Unauthorized
+                    || response.StatusCode == HttpStatusCode.Forbidden)
+                    throw new UnauthorizedAccessException("Greenlight session expired or missing.");
+                response.EnsureSuccessStatusCode();
+                var body = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                DebugLog.Write("GET /api/v1/rooms_configurations.json -> HTTP " + (int)response.StatusCode);
+                return ParseConfigurations(body);
+            }
+        }
+
+        public async Task<string> CreateRoomAsync(string name)
+        {
+            var json = Newtonsoft.Json.JsonConvert.SerializeObject(
+                new { room = new { name } });
+            using (var request = BuildRequest(HttpMethod.Post, "api/v1/rooms.json"))
+            {
+                request.Content = new System.Net.Http.StringContent(
+                    json, System.Text.Encoding.UTF8, "application/json");
+                using (var response = await Http.SendAsync(request).ConfigureAwait(false))
+                {
+                    if (response.StatusCode == HttpStatusCode.Unauthorized
+                        || response.StatusCode == HttpStatusCode.Forbidden)
+                        throw new UnauthorizedAccessException("Greenlight session expired or missing.");
+                    response.EnsureSuccessStatusCode();
+                    var body = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    DebugLog.Write("POST /api/v1/rooms.json -> HTTP " + (int)response.StatusCode
+                        + Environment.NewLine + body);
+                    return ExtractFriendlyId(body);
+                }
+            }
+        }
+
+        public async Task UpdateRoomSettingAsync(string friendlyId, string settingName, string settingValue)
+        {
+            var json = Newtonsoft.Json.JsonConvert.SerializeObject(
+                new { room_setting = new { settingName, settingValue } });
+            using (var request = BuildRequest(HttpMethod.Patch,
+                $"api/v1/room_settings/{friendlyId}.json"))
+            {
+                request.Content = new System.Net.Http.StringContent(
+                    json, System.Text.Encoding.UTF8, "application/json");
+                using (var response = await Http.SendAsync(request).ConfigureAwait(false))
+                {
+                    DebugLog.Write($"PATCH /api/v1/room_settings/{friendlyId}.json"
+                        + $" [{settingName}={settingValue}] -> HTTP " + (int)response.StatusCode);
+                    if (response.StatusCode == HttpStatusCode.Unauthorized
+                        || response.StatusCode == HttpStatusCode.Forbidden)
+                        throw new UnauthorizedAccessException("Greenlight session expired or missing.");
+                    response.EnsureSuccessStatusCode();
+                }
+            }
+        }
+
+        public async Task<Dictionary<string, string>> GetRoomSettingsAsync(string friendlyId)
+        {
+            using (var request = BuildRequest(HttpMethod.Get,
+                $"api/v1/room_settings/{friendlyId}.json"))
+            using (var response = await Http.SendAsync(request).ConfigureAwait(false))
+            {
+                if (response.StatusCode == HttpStatusCode.Unauthorized
+                    || response.StatusCode == HttpStatusCode.Forbidden)
+                    throw new UnauthorizedAccessException("Greenlight session expired or missing.");
+                response.EnsureSuccessStatusCode();
+                var body = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                DebugLog.Write($"GET /api/v1/room_settings/{friendlyId}.json -> HTTP "
+                    + (int)response.StatusCode);
+                return ParseConfigurations(body);
+            }
+        }
+
         internal static Dictionary<string, string> ParseConfigurations(string json)
         {
             var token = JToken.Parse(json);
