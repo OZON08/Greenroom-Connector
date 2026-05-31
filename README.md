@@ -61,6 +61,14 @@ the attendee side.
       <sub>Resulting appointment with join link and location</sub>
     </td>
   </tr>
+  <tr>
+    <td align="center" width="50%">
+      <img src="docs/images/screenshot-06-newroom.png" alt="Dialog for creating a new Greenlight room" width="460" />
+      <br />
+      <sub>Create a new room directly from Outlook</sub>
+    </td>
+    <td></td>
+  </tr>
 </table>
 
 ## Features
