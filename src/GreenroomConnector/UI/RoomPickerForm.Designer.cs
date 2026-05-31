@@ -71,6 +71,7 @@ namespace GreenroomConnector.UI
             this.listRooms.Anchor = AnchorStyles.Top | AnchorStyles.Bottom
                                   | AnchorStyles.Left | AnchorStyles.Right;
             this.listRooms.DoubleClick += new System.EventHandler(this.ListRooms_DoubleClick);
+            this.listRooms.SelectedIndexChanged += new System.EventHandler(this.ListRooms_SelectedIndexChanged);
 
             // Status label
             this.labelStatus.AutoSize = false;
@@ -151,7 +152,7 @@ namespace GreenroomConnector.UI
             this.buttonInsertAsModerator.Anchor   = AnchorStyles.Bottom | AnchorStyles.Left;
             this.buttonInsertAsModerator.Text     = "Insert as Moderator";
             this.buttonInsertAsModerator.Visible  = false;
-            // Click event wired in Task 8 once the handler exists
+            this.buttonInsertAsModerator.Click += new System.EventHandler(this.ButtonInsertAsModerator_Click);
 
             // Form
             this.AutoScaleDimensions = new SizeF(7F, 15F);

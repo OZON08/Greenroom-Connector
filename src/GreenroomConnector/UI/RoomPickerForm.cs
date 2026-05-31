@@ -4,12 +4,16 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using GreenroomConnector.Models;
 using GreenroomConnector.Resources;
+using GreenroomConnector.Services;
 
 namespace GreenroomConnector.UI
 {
     public partial class RoomPickerForm : Form
     {
         public Room SelectedRoom { get; private set; }
+
+        private string _moderatorCode;
+        private System.Threading.CancellationTokenSource _settingsCts;
 
         public RoomPickerForm()
         {
@@ -148,6 +152,74 @@ namespace GreenroomConnector.UI
         {
             if (listRooms.SelectedItem is Room)
                 ButtonInsert_Click(sender, e);
+        }
+
+        private async void ListRooms_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            // Cancel any in-flight settings fetch for the previously selected room
+            _settingsCts?.Cancel();
+            _settingsCts?.Dispose();
+            _settingsCts = new System.Threading.CancellationTokenSource();
+            var cts = _settingsCts;
+
+            buttonInsertAsModerator.Visible = false;
+            _moderatorCode = null;
+
+            var room = listRooms.SelectedItem as Room;
+            if (room == null) return;
+
+            buttonInsert.Enabled = false;
+            labelStatus.Text = Strings.RoomPicker_CheckingModeratorCode;
+
+            try
+            {
+                var settings = await ThisAddIn.Instance.Client
+                    .GetRoomSettingsAsync(room.FriendlyId)
+                    .ConfigureAwait(true);
+
+                if (cts.IsCancellationRequested) return;
+
+                settings.TryGetValue("glModeratorAccessCode", out var code);
+                if (!string.IsNullOrEmpty(code))
+                {
+                    _moderatorCode = code;
+                    buttonInsertAsModerator.Visible = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                if (!cts.IsCancellationRequested)
+                    DebugLog.Write("Could not fetch room settings for moderator check: " + ex.Message);
+            }
+            finally
+            {
+                if (!cts.IsCancellationRequested)
+                {
+                    buttonInsert.Enabled = listRooms.Items.Count > 0;
+                    labelStatus.Text = string.Empty;
+                }
+            }
+        }
+
+        private void ButtonInsertAsModerator_Click(object sender, EventArgs e)
+        {
+            var room = listRooms.SelectedItem as Room;
+            if (room == null || string.IsNullOrEmpty(_moderatorCode)) return;
+
+            SelectedRoom = room;
+            SelectedRoom.JoinUrl = new Uri(
+                ThisAddIn.Instance.Settings.GreenlightUrl,
+                $"rooms/{room.FriendlyId}?viewerCode={_moderatorCode}"
+            ).ToString();
+            DialogResult = DialogResult.OK;
+            Close();
+        }
+
+        protected override void OnFormClosed(FormClosedEventArgs e)
+        {
+            _settingsCts?.Cancel();
+            _settingsCts?.Dispose();
+            base.OnFormClosed(e);
         }
     }
 }
