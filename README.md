@@ -89,10 +89,9 @@ the attendee side.
 
 ## Quick start (administrator)
 
-> The signed MSI build is not yet automated — see
-> [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md) for the local build instructions.
-> The build produces one MSI per language: `GreenroomConnector-de-DE.msi`
-> and `GreenroomConnector-en-US.msi`.
+Download the latest MSI from the [Releases page](https://github.com/OZON08/Greenroom-Connector/releases).
+The build produces one MSI per language: `GreenroomConnector-de-DE.msi` (German UI)
+and `GreenroomConnector.msi` (English UI).
 
 Pick the language MSI matching your users and either double-click for the
 interactive wizard, or roll out silently:
@@ -153,12 +152,6 @@ The wrapping text around the dial-in number is translatable and lives in
 - Optional WPF / Fluent rewrite of the picker for a more native Win11 feel
 - Pin rooms as favorites at the top of the picker (per-user, persisted
   locally) so frequently used rooms stay one click away
-
-## Development
-
-Build and run from source — see [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md)
-for the full setup (Office workload requirement, dev registry script, optional
-local Greenlight + Keycloak Docker stack for offline work).
 
 ## Acknowledgements
 
