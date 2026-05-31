@@ -128,7 +128,7 @@ namespace GreenroomConnector.Services
         {
             var json = Newtonsoft.Json.JsonConvert.SerializeObject(
                 new { room_setting = new { settingName, settingValue } });
-            using (var request = BuildRequest(HttpMethod.Patch,
+            using (var request = BuildRequest(new HttpMethod("PATCH"),
                 $"api/v1/room_settings/{friendlyId}.json"))
             {
                 request.Content = new System.Net.Http.StringContent(
