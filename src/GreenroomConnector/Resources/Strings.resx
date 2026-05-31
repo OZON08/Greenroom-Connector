@@ -51,6 +51,25 @@
   <data name="RoomPicker_NoRooms" xml:space="preserve"><value>No rooms found for your account.</value></data>
   <data name="RoomPicker_InsertButton" xml:space="preserve"><value>Insert</value></data>
   <data name="RoomPicker_CancelButton" xml:space="preserve"><value>Cancel</value></data>
+  <data name="RoomPicker_NewRoomButton" xml:space="preserve"><value>New Room</value></data>
+  <data name="RoomPicker_InsertAsModeratorButton" xml:space="preserve"><value>Insert as Moderator</value></data>
+  <data name="RoomPicker_CheckingModeratorCode" xml:space="preserve"><value>Checking moderator code…</value></data>
+
+  <data name="CreateRoom_Title" xml:space="preserve"><value>Create New Room</value></data>
+  <data name="CreateRoom_NameLabel" xml:space="preserve"><value>Name</value></data>
+  <data name="CreateRoom_SettingsGroup" xml:space="preserve"><value>Settings</value></data>
+  <data name="CreateRoom_Record" xml:space="preserve"><value>Allow recording</value></data>
+  <data name="CreateRoom_RequireAuth" xml:space="preserve"><value>Require authentication</value></data>
+  <data name="CreateRoom_AnyoneModerator" xml:space="preserve"><value>Anyone can moderate</value></data>
+  <data name="CreateRoom_ViewerCode" xml:space="preserve"><value>Viewer access code</value></data>
+  <data name="CreateRoom_ModeratorCode" xml:space="preserve"><value>Moderator access code</value></data>
+  <data name="CreateRoom_GuestPolicy" xml:space="preserve"><value>Guests</value></data>
+  <data name="CreateRoom_GuestAlways" xml:space="preserve"><value>Always allow</value></data>
+  <data name="CreateRoom_GuestAsk" xml:space="preserve"><value>Ask moderator</value></data>
+  <data name="CreateRoom_GuestDeny" xml:space="preserve"><value>Always deny</value></data>
+  <data name="CreateRoom_SubmitButton" xml:space="preserve"><value>Create &amp; Insert</value></data>
+  <data name="CreateRoom_LoadingConfig" xml:space="preserve"><value>Loading settings…</value></data>
+  <data name="CreateRoom_ConfigError" xml:space="preserve"><value>Could not load settings</value></data>
 
   <data name="Login_Title" xml:space="preserve"><value>Sign in to Greenlight</value></data>
   <data name="Logout_Title" xml:space="preserve"><value>Signing out…</value></data>
