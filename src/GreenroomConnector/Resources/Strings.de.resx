@@ -67,7 +67,7 @@
   <data name="CreateRoom_GuestAlways" xml:space="preserve"><value>Immer erlauben</value></data>
   <data name="CreateRoom_GuestAsk" xml:space="preserve"><value>Moderator fragen</value></data>
   <data name="CreateRoom_GuestDeny" xml:space="preserve"><value>Immer ablehnen</value></data>
-  <data name="CreateRoom_SubmitButton" xml:space="preserve"><value>Anlegen &amp; Einfügen</value></data>
+  <data name="CreateRoom_SubmitButton" xml:space="preserve"><value>Anlegen</value></data>
   <data name="CreateRoom_LoadingConfig" xml:space="preserve"><value>Einstellungen werden geladen…</value></data>
   <data name="CreateRoom_ConfigError" xml:space="preserve"><value>Einstellungen konnten nicht geladen werden</value></data>
 
