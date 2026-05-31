@@ -55,7 +55,7 @@ namespace GreenroomConnector.UI
             this.labelHeader.BackColor = Color.Transparent;
             this.labelHeader.Location = new Point(20, 20);
             // Two lines tall: the bold 11pt header wraps rather than clipping.
-            this.labelHeader.Size = new Size(600, 44);
+            this.labelHeader.Size = new Size(600, 56);
             this.labelHeader.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             this.labelHeader.Text = "Header";
 
@@ -67,7 +67,7 @@ namespace GreenroomConnector.UI
             this.listRooms.IntegralHeight = false;
             this.listRooms.ItemHeight = 22;
             this.listRooms.FormattingEnabled = true;
-            this.listRooms.Location = new Point(20, 72);
+            this.listRooms.Location = new Point(20, 84);
             this.listRooms.Size = new Size(600, 224);
             this.listRooms.Anchor = AnchorStyles.Top | AnchorStyles.Bottom
                                   | AnchorStyles.Left | AnchorStyles.Right;
@@ -79,14 +79,14 @@ namespace GreenroomConnector.UI
             this.labelStatus.Font = FontBody;
             this.labelStatus.ForeColor = TextMuted;
             this.labelStatus.BackColor = Color.Transparent;
-            this.labelStatus.Location = new Point(20, 304);
+            this.labelStatus.Location = new Point(20, 316);
             this.labelStatus.Size = new Size(600, 20);
             this.labelStatus.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             this.labelStatus.TextAlign = ContentAlignment.MiddleLeft;
 
             // Footer separator (subtle hairline above buttons)
             this.footerSeparator.BackColor = StrokeQuiet;
-            this.footerSeparator.Location = new Point(0, 332);
+            this.footerSeparator.Location = new Point(0, 344);
             this.footerSeparator.Size = new Size(640, 1);
             this.footerSeparator.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
 
@@ -100,7 +100,7 @@ namespace GreenroomConnector.UI
             this.buttonCancel.FlatAppearance.MouseOverBackColor = SurfaceMuted;
             this.buttonCancel.FlatAppearance.MouseDownBackColor = StrokeQuiet;
             this.buttonCancel.Cursor = Cursors.Hand;
-            this.buttonCancel.Location = new Point(506, 348);
+            this.buttonCancel.Location = new Point(526, 360);
             this.buttonCancel.Size = new Size(94, 30);
             this.buttonCancel.Text = "Cancel";
             this.buttonCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
@@ -116,7 +116,7 @@ namespace GreenroomConnector.UI
             this.buttonInsert.FlatAppearance.MouseOverBackColor = BrandBlueHover;
             this.buttonInsert.FlatAppearance.MouseDownBackColor = BrandBluePressed;
             this.buttonInsert.Cursor = Cursors.Hand;
-            this.buttonInsert.Location = new Point(406, 348);
+            this.buttonInsert.Location = new Point(424, 360);
             this.buttonInsert.Size = new Size(94, 30);
             this.buttonInsert.Text = "Insert";
             this.buttonInsert.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
@@ -132,7 +132,7 @@ namespace GreenroomConnector.UI
             this.buttonNewRoom.FlatAppearance.MouseOverBackColor = SurfaceMuted;
             this.buttonNewRoom.FlatAppearance.MouseDownBackColor = StrokeQuiet;
             this.buttonNewRoom.Cursor   = Cursors.Hand;
-            this.buttonNewRoom.Location = new Point(20, 348);
+            this.buttonNewRoom.Location = new Point(20, 360);
             this.buttonNewRoom.Size     = new Size(165, 30);
             this.buttonNewRoom.Anchor   = AnchorStyles.Bottom | AnchorStyles.Left;
             this.buttonNewRoom.Text     = "New Room";
@@ -148,7 +148,7 @@ namespace GreenroomConnector.UI
             this.buttonInsertAsModerator.FlatAppearance.MouseOverBackColor = SurfaceMuted;
             this.buttonInsertAsModerator.FlatAppearance.MouseDownBackColor = StrokeQuiet;
             this.buttonInsertAsModerator.Cursor   = Cursors.Hand;
-            this.buttonInsertAsModerator.Location = new Point(191, 348);
+            this.buttonInsertAsModerator.Location = new Point(191, 360);
             this.buttonInsertAsModerator.Size     = new Size(185, 30);
             this.buttonInsertAsModerator.Anchor   = AnchorStyles.Bottom | AnchorStyles.Left;
             this.buttonInsertAsModerator.Text     = "Insert as Moderator";
@@ -160,7 +160,7 @@ namespace GreenroomConnector.UI
             this.AutoScaleMode = AutoScaleMode.Font;
             this.Font = FontBody;
             this.BackColor = SurfacePrimary;
-            this.ClientSize = new Size(640, 388);
+            this.ClientSize = new Size(640, 404);
             this.Controls.Add(this.buttonCancel);
             this.Controls.Add(this.buttonInsert);
             this.Controls.Add(this.buttonNewRoom);

@@ -28,7 +28,7 @@
         unprefixed names so the WXS side stays terse.
   -->
   <PropertyGroup>
-    <GrcVersion>1.0.0.0</GrcVersion>
+    <GrcVersion>1.1.0.0</GrcVersion>
     <GrcPublisherName>OZON08</GrcPublisherName>
     <GrcProductName>Greenroom Connector</GrcProductName>
     <GrcCopyright>Copyright © 2026 OZON08</GrcCopyright>
