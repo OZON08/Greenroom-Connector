@@ -22,6 +22,7 @@ namespace GreenroomConnector.Services
         private HttpClient _http;
         private HttpClientHandler _handler;
         private string _currentUserId;
+        private string _csrfToken;
 
         public GreenlightClient(SettingsProvider settings, SessionStore session)
         {
@@ -124,13 +125,46 @@ namespace GreenroomConnector.Services
             }
         }
 
+        // Greenlight uses Rails' cookie-store sessions with CSRF protection. The
+        // SPA reads the token from the <meta name="csrf-token"> tag of any HTML
+        // page and sends it as X-CSRF-TOKEN on mutating requests. GET endpoints
+        // are exempt, which is why only POST/PATCH need this. The token is derived
+        // from the _csrf_token already inside our session cookie (set during the
+        // WebView2 login), so the masked value parsed here validates against it.
+        // Cached for the client's lifetime.
+        private async Task<string> EnsureCsrfTokenAsync()
+        {
+            if (!string.IsNullOrEmpty(_csrfToken)) return _csrfToken;
+
+            using (var request = BuildRequest(HttpMethod.Get, ""))
+            {
+                // Override the client-wide application/json Accept: we need the
+                // HTML SPA shell, not a JSON response, to read the meta tag.
+                request.Headers.Accept.Clear();
+                request.Headers.Accept.ParseAdd("text/html");
+                using (var response = await Http.SendAsync(request).ConfigureAwait(false))
+                {
+                    response.EnsureSuccessStatusCode();
+                    var html = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    var match = System.Text.RegularExpressions.Regex.Match(
+                        html, "<meta name=\"csrf-token\" content=\"([^\"]+)\"");
+                    _csrfToken = match.Success ? match.Groups[1].Value : null;
+                    DebugLog.Write("CSRF token " + (_csrfToken != null ? "obtained" : "NOT found in root page"));
+                    return _csrfToken;
+                }
+            }
+        }
+
         public async Task<string> CreateRoomAsync(string name)
         {
             var userId = await EnsureCurrentUserIdAsync().ConfigureAwait(false);
+            var csrf = await EnsureCsrfTokenAsync().ConfigureAwait(false);
             var json = Newtonsoft.Json.JsonConvert.SerializeObject(
                 new { room = new { name, user_id = userId } });
             using (var request = BuildRequest(HttpMethod.Post, "api/v1/rooms.json"))
             {
+                if (!string.IsNullOrEmpty(csrf))
+                    request.Headers.TryAddWithoutValidation("X-CSRF-TOKEN", csrf);
                 request.Content = new System.Net.Http.StringContent(
                     json, System.Text.Encoding.UTF8, "application/json");
                 using (var response = await Http.SendAsync(request).ConfigureAwait(false))
@@ -149,11 +183,14 @@ namespace GreenroomConnector.Services
 
         public async Task UpdateRoomSettingAsync(string friendlyId, string settingName, string settingValue)
         {
+            var csrf = await EnsureCsrfTokenAsync().ConfigureAwait(false);
             var json = Newtonsoft.Json.JsonConvert.SerializeObject(
                 new { room_setting = new { settingName, settingValue } });
             using (var request = BuildRequest(new HttpMethod("PATCH"),
                 $"api/v1/room_settings/{friendlyId}.json"))
             {
+                if (!string.IsNullOrEmpty(csrf))
+                    request.Headers.TryAddWithoutValidation("X-CSRF-TOKEN", csrf);
                 request.Content = new System.Net.Http.StringContent(
                     json, System.Text.Encoding.UTF8, "application/json");
                 using (var response = await Http.SendAsync(request).ConfigureAwait(false))

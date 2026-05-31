@@ -174,8 +174,8 @@ namespace GreenroomConnector.UI
             this.buttonCreate.FlatAppearance.MouseOverBackColor  = BrandBlueHover;
             this.buttonCreate.FlatAppearance.MouseDownBackColor  = BrandBluePressed;
             this.buttonCreate.Cursor   = Cursors.Hand;
-            this.buttonCreate.Location = new Point(228, 412);
-            this.buttonCreate.Size     = new Size(132, 30);
+            this.buttonCreate.Location = new Point(266, 412);
+            this.buttonCreate.Size     = new Size(94, 30);
             this.buttonCreate.Anchor   = AnchorStyles.Bottom | AnchorStyles.Right;
             this.buttonCreate.Enabled  = false;
             this.buttonCreate.Click   += new System.EventHandler(this.ButtonCreate_Click);
