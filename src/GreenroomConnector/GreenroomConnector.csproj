@@ -161,6 +161,10 @@
     <Compile Include="UI\RoomPickerForm.Designer.cs">
       <DependentUpon>RoomPickerForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI\CreateRoomForm.cs" />
+    <Compile Include="UI\CreateRoomForm.Designer.cs">
+      <DependentUpon>CreateRoomForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\LoginWindow.cs">
       <SubType>Form</SubType>
     </Compile>
