@@ -224,6 +224,9 @@ namespace GreenroomConnector.UI
 
             SelectedRoom = room;
             SelectedRoom.IsModeratorLink = true;
+            // Show the moderator code in the body too (it's the value embedded in
+            // the link below).
+            SelectedRoom.AccessCode = _moderatorCode;
             // Greenlight only exposes the viewerCode query param to pre-fill the
             // access-code field; it validates the entered value against the
             // moderator code too, so passing the moderator code here grants the

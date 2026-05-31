@@ -54,7 +54,8 @@ namespace GreenroomConnector.UI
             this.labelHeader.ForeColor = TextPrimary;
             this.labelHeader.BackColor = Color.Transparent;
             this.labelHeader.Location = new Point(20, 20);
-            this.labelHeader.Size = new Size(600, 28);
+            // Two lines tall: the bold 11pt header wraps rather than clipping.
+            this.labelHeader.Size = new Size(600, 44);
             this.labelHeader.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             this.labelHeader.Text = "Header";
 
@@ -66,8 +67,8 @@ namespace GreenroomConnector.UI
             this.listRooms.IntegralHeight = false;
             this.listRooms.ItemHeight = 22;
             this.listRooms.FormattingEnabled = true;
-            this.listRooms.Location = new Point(20, 56);
-            this.listRooms.Size = new Size(600, 240);
+            this.listRooms.Location = new Point(20, 72);
+            this.listRooms.Size = new Size(600, 224);
             this.listRooms.Anchor = AnchorStyles.Top | AnchorStyles.Bottom
                                   | AnchorStyles.Left | AnchorStyles.Right;
             this.listRooms.DoubleClick += new System.EventHandler(this.ListRooms_DoubleClick);

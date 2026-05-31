@@ -137,11 +137,36 @@ namespace GreenroomConnector.UI
                 await ApplySettingsAsync(client, friendlyId).ConfigureAwait(true);
 
                 var baseUrl = ThisAddIn.Instance.Settings.GreenlightUrl;
+                string accessCode = null;
+                string joinUrl = new Uri(baseUrl, $"rooms/{friendlyId}").ToString();
+
+                // If a viewer access code was enabled, Greenlight generated the
+                // value server-side. Fetch it back so it lands in the body and the
+                // link — otherwise the code would be missing from the inserted text.
+                if (checkBoxViewerCode.Visible && checkBoxViewerCode.Checked)
+                {
+                    try
+                    {
+                        var settings = await client.GetRoomSettingsAsync(friendlyId).ConfigureAwait(true);
+                        settings.TryGetValue("glViewerAccessCode", out var code);
+                        if (!string.IsNullOrEmpty(code))
+                        {
+                            accessCode = code;
+                            joinUrl = new Uri(baseUrl, $"rooms/{friendlyId}?viewerCode={code}").ToString();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        DebugLog.Write("Could not fetch generated viewer access code: " + ex.Message);
+                    }
+                }
+
                 CreatedRoom = new Room
                 {
                     Name       = name,
                     FriendlyId = friendlyId,
-                    JoinUrl    = new Uri(baseUrl, $"rooms/{friendlyId}").ToString()
+                    JoinUrl    = joinUrl,
+                    AccessCode = accessCode
                 };
 
                 DialogResult = DialogResult.OK;
