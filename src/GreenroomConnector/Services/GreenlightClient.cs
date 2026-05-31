@@ -135,13 +135,13 @@ namespace GreenroomConnector.Services
                     json, System.Text.Encoding.UTF8, "application/json");
                 using (var response = await Http.SendAsync(request).ConfigureAwait(false))
                 {
+                    var body = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    DebugLog.Write("POST /api/v1/rooms.json -> HTTP " + (int)response.StatusCode
+                        + Environment.NewLine + body);
                     if (response.StatusCode == HttpStatusCode.Unauthorized
                         || response.StatusCode == HttpStatusCode.Forbidden)
                         throw new UnauthorizedAccessException("Greenlight session expired or missing.");
                     response.EnsureSuccessStatusCode();
-                    var body = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    DebugLog.Write("POST /api/v1/rooms.json -> HTTP " + (int)response.StatusCode
-                        + Environment.NewLine + body);
                     return ExtractFriendlyId(body);
                 }
             }
