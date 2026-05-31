@@ -20,6 +20,8 @@ namespace GreenroomConnector.UI
             labelHeader.Text = Strings.RoomPicker_Header;
             buttonInsert.Text = Strings.RoomPicker_InsertButton;
             buttonCancel.Text = Strings.RoomPicker_CancelButton;
+            buttonNewRoom.Text           = Strings.RoomPicker_NewRoomButton;
+            buttonInsertAsModerator.Text = Strings.RoomPicker_InsertAsModeratorButton;
         }
 
         protected override async void OnLoad(EventArgs e)
@@ -128,6 +130,18 @@ namespace GreenroomConnector.UI
         {
             DialogResult = DialogResult.Cancel;
             Close();
+        }
+
+        private void ButtonNewRoom_Click(object sender, EventArgs e)
+        {
+            using (var form = new CreateRoomForm())
+            {
+                if (form.ShowDialog(this) != DialogResult.OK || form.CreatedRoom == null)
+                    return;
+                SelectedRoom = form.CreatedRoom;
+                DialogResult = DialogResult.OK;
+                Close();
+            }
         }
 
         private void ListRooms_DoubleClick(object sender, EventArgs e)
