@@ -21,6 +21,7 @@ namespace GreenroomConnector.Services
         private readonly SessionStore _session;
         private HttpClient _http;
         private HttpClientHandler _handler;
+        private string _currentUserId;
 
         public GreenlightClient(SettingsProvider settings, SessionStore session)
         {
@@ -102,10 +103,32 @@ namespace GreenroomConnector.Services
             }
         }
 
+        // GET /api/v1/sessions.json returns current_user including their integer id.
+        // Cached for the lifetime of the client — cleared when Dispose is called.
+        private async Task<string> EnsureCurrentUserIdAsync()
+        {
+            if (!string.IsNullOrEmpty(_currentUserId)) return _currentUserId;
+
+            using (var request = BuildRequest(HttpMethod.Get, "api/v1/sessions.json"))
+            using (var response = await Http.SendAsync(request).ConfigureAwait(false))
+            {
+                if (response.StatusCode == HttpStatusCode.Unauthorized
+                    || response.StatusCode == HttpStatusCode.Forbidden)
+                    throw new UnauthorizedAccessException("Greenlight session expired or missing.");
+                response.EnsureSuccessStatusCode();
+                var body = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                var token = JToken.Parse(body);
+                _currentUserId = (token as JObject)?["data"]?["id"]?.ToString();
+                DebugLog.Write("GET /api/v1/sessions.json -> user_id=" + _currentUserId);
+                return _currentUserId;
+            }
+        }
+
         public async Task<string> CreateRoomAsync(string name)
         {
+            var userId = await EnsureCurrentUserIdAsync().ConfigureAwait(false);
             var json = Newtonsoft.Json.JsonConvert.SerializeObject(
-                new { room = new { name } });
+                new { room = new { name, user_id = userId } });
             using (var request = BuildRequest(HttpMethod.Post, "api/v1/rooms.json"))
             {
                 request.Content = new System.Net.Http.StringContent(
