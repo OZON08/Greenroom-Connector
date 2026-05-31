@@ -119,6 +119,7 @@ namespace GreenroomConnector.UI
         {
             listRooms.Enabled = !busy;
             buttonInsert.Enabled = !busy && listRooms.Items.Count > 0;
+            buttonNewRoom.Enabled = !busy;
             labelStatus.Text = message ?? string.Empty;
             UseWaitCursor = busy;
         }
