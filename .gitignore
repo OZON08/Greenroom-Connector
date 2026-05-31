@@ -46,3 +46,7 @@ AGENTS.md
 
 # graphify knowledge-graph output / cache (regenerated via graphify update)
 graphify-out/
+
+# Local dev docs and AI planning artifacts (not for public repo)
+docs/DEVELOPMENT.md
+docs/superpowers/
