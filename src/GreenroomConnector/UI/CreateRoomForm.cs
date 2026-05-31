@@ -107,7 +107,12 @@ namespace GreenroomConnector.UI
         private async void ButtonCreate_Click(object sender, EventArgs e)
         {
             var name = textBoxName.Text.Trim();
-            if (string.IsNullOrEmpty(name)) return;
+            if (string.IsNullOrEmpty(name))
+            {
+                labelStatus.Text = Strings.CreateRoom_NameRequired;
+                textBoxName.Focus();
+                return;
+            }
 
             SetBusy(true, null);
             try
@@ -210,7 +215,11 @@ namespace GreenroomConnector.UI
         {
             textBoxName.Enabled      = !busy;
             groupBoxSettings.Enabled = !busy;
-            buttonCreate.Enabled     = !busy && !string.IsNullOrWhiteSpace(textBoxName.Text);
+            // Only disable during a network operation — keeping the primary button
+            // enabled at rest preserves its white text (a disabled flat button
+            // renders grey text regardless of ForeColor). Empty-name validation
+            // happens on click instead.
+            buttonCreate.Enabled     = !busy;
             UseWaitCursor            = busy;
             if (message != null)
                 labelStatus.Text = message;
@@ -220,7 +229,10 @@ namespace GreenroomConnector.UI
 
         private void TextBoxName_TextChanged(object sender, EventArgs e)
         {
-            buttonCreate.Enabled = !string.IsNullOrWhiteSpace(textBoxName.Text);
+            // Clear any "name required" hint as soon as the user starts typing.
+            if (!string.IsNullOrWhiteSpace(textBoxName.Text)
+                && labelStatus.Text == Strings.CreateRoom_NameRequired)
+                labelStatus.Text = string.Empty;
         }
 
         private void ButtonCancel_Click(object sender, EventArgs e)

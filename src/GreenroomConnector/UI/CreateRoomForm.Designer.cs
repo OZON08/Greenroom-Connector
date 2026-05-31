@@ -177,7 +177,6 @@ namespace GreenroomConnector.UI
             this.buttonCreate.Location = new Point(266, 412);
             this.buttonCreate.Size     = new Size(94, 30);
             this.buttonCreate.Anchor   = AnchorStyles.Bottom | AnchorStyles.Right;
-            this.buttonCreate.Enabled  = false;
             this.buttonCreate.Click   += new System.EventHandler(this.ButtonCreate_Click);
 
             // Add controls to groupBoxGuestPolicy

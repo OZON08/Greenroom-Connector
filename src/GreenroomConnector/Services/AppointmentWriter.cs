@@ -73,6 +73,14 @@ namespace GreenroomConnector.Services
             sb.AppendLine(Strings.Meeting_Room + ": " + (room.Name ?? room.FriendlyId));
             sb.AppendLine(Strings.Meeting_JoinLinkText + ": " + room.JoinUrl);
 
+            // Viewer access code (when the room has one and it's a participant link).
+            if (!string.IsNullOrEmpty(room.AccessCode))
+                sb.AppendLine(Strings.Meeting_AccessCode + ": " + room.AccessCode);
+
+            // Note that this particular link grants moderator rights.
+            if (room.IsModeratorLink)
+                sb.AppendLine(Strings.Meeting_ModeratorNote);
+
             // Dial-in section only when admin enabled it AND a number is configured.
             // Avoids printing a "Rufnummer:" line with no number behind it.
             bool dialInPossible = showDialIn

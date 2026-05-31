@@ -32,6 +32,16 @@ namespace GreenroomConnector.Models
         [JsonIgnore]
         public string JoinUrl { get; set; }
 
+        // Viewer access code to print in the appointment body (set by the picker
+        // when the selected room has one). Null/empty means no code line.
+        [JsonIgnore]
+        public string AccessCode { get; set; }
+
+        // True when the room was inserted via "Als Moderator einfügen" — drives
+        // the moderator-access note in the appointment body.
+        [JsonIgnore]
+        public bool IsModeratorLink { get; set; }
+
         public override string ToString() => Name ?? FriendlyId ?? Id.ToString();
     }
 }

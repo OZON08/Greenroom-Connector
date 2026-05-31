@@ -70,6 +70,7 @@
   <data name="CreateRoom_SubmitButton" xml:space="preserve"><value>Anlegen</value></data>
   <data name="CreateRoom_LoadingConfig" xml:space="preserve"><value>Einstellungen werden geladen…</value></data>
   <data name="CreateRoom_ConfigError" xml:space="preserve"><value>Einstellungen konnten nicht geladen werden</value></data>
+  <data name="CreateRoom_NameRequired" xml:space="preserve"><value>Bitte einen Namen eingeben.</value></data>
 
   <data name="Login_Title" xml:space="preserve"><value>Bei Greenlight anmelden</value></data>
   <data name="Logout_Title" xml:space="preserve"><value>Abmelden …</value></data>
@@ -77,6 +78,8 @@
   <data name="Meeting_Header" xml:space="preserve"><value>BigBlueButton-Meeting</value></data>
   <data name="Meeting_Room" xml:space="preserve"><value>Raum</value></data>
   <data name="Meeting_JoinLinkText" xml:space="preserve"><value>Online beitreten</value></data>
+  <data name="Meeting_AccessCode" xml:space="preserve"><value>Zugangscode</value></data>
+  <data name="Meeting_ModeratorNote" xml:space="preserve"><value>Hinweis: Dieser Link öffnet den Raum mit Moderator-Rechten – bitte nicht weitergeben.</value></data>
   <data name="Meeting_DialIn" xml:space="preserve"><value>Telefoneinwahl:
 Rufnummer: {number}
 Konferenz-ID und PIN werden beim Start des Meetings in BigBlueButton angezeigt.</value></data>

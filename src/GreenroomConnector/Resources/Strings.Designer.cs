@@ -76,11 +76,14 @@ namespace GreenroomConnector.Resources
         internal static string CreateRoom_SubmitButton => Get(nameof(CreateRoom_SubmitButton));
         internal static string CreateRoom_LoadingConfig => Get(nameof(CreateRoom_LoadingConfig));
         internal static string CreateRoom_ConfigError => Get(nameof(CreateRoom_ConfigError));
+        internal static string CreateRoom_NameRequired => Get(nameof(CreateRoom_NameRequired));
         internal static string Login_Title => Get(nameof(Login_Title));
         internal static string Logout_Title => Get(nameof(Logout_Title));
         internal static string Meeting_Header => Get(nameof(Meeting_Header));
         internal static string Meeting_Room => Get(nameof(Meeting_Room));
         internal static string Meeting_JoinLinkText => Get(nameof(Meeting_JoinLinkText));
+        internal static string Meeting_AccessCode => Get(nameof(Meeting_AccessCode));
+        internal static string Meeting_ModeratorNote => Get(nameof(Meeting_ModeratorNote));
         internal static string Meeting_DialIn => Get(nameof(Meeting_DialIn));
         internal static string Error_NoAppointmentContext => Get(nameof(Error_NoAppointmentContext));
         internal static string Error_NoGreenlightUrl => Get(nameof(Error_NoGreenlightUrl));

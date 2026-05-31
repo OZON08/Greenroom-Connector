@@ -43,3 +43,6 @@ Thumbs.db
 
 # Local agent memory/context exports
 AGENTS.md
+
+# graphify knowledge-graph output / cache (regenerated via graphify update)
+graphify-out/

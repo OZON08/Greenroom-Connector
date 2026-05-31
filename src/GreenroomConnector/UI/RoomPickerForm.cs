@@ -13,6 +13,7 @@ namespace GreenroomConnector.UI
         public Room SelectedRoom { get; private set; }
 
         private string _moderatorCode;
+        private string _viewerCode;
         private System.Threading.CancellationTokenSource _settingsCts;
 
         public RoomPickerForm()
@@ -127,6 +128,16 @@ namespace GreenroomConnector.UI
         private void ButtonInsert_Click(object sender, EventArgs e)
         {
             SelectedRoom = listRooms.SelectedItem as Room;
+            if (SelectedRoom != null && !string.IsNullOrEmpty(_viewerCode))
+            {
+                // Show the viewer code in the body and pre-fill it in the link so
+                // participants can join in one click.
+                SelectedRoom.AccessCode = _viewerCode;
+                SelectedRoom.JoinUrl = new Uri(
+                    ThisAddIn.Instance.Settings.GreenlightUrl,
+                    $"rooms/{SelectedRoom.FriendlyId}?viewerCode={_viewerCode}"
+                ).ToString();
+            }
             DialogResult = DialogResult.OK;
             Close();
         }
@@ -165,6 +176,7 @@ namespace GreenroomConnector.UI
 
             buttonInsertAsModerator.Visible = false;
             _moderatorCode = null;
+            _viewerCode = null;
 
             var room = listRooms.SelectedItem as Room;
             if (room == null) return;
@@ -179,6 +191,9 @@ namespace GreenroomConnector.UI
                     .ConfigureAwait(true);
 
                 if (cts.IsCancellationRequested) return;
+
+                settings.TryGetValue("glViewerAccessCode", out var viewerCode);
+                _viewerCode = string.IsNullOrEmpty(viewerCode) ? null : viewerCode;
 
                 settings.TryGetValue("glModeratorAccessCode", out var code);
                 if (!string.IsNullOrEmpty(code))
@@ -208,6 +223,11 @@ namespace GreenroomConnector.UI
             if (room == null || string.IsNullOrEmpty(_moderatorCode)) return;
 
             SelectedRoom = room;
+            SelectedRoom.IsModeratorLink = true;
+            // Greenlight only exposes the viewerCode query param to pre-fill the
+            // access-code field; it validates the entered value against the
+            // moderator code too, so passing the moderator code here grants the
+            // moderator role on join.
             SelectedRoom.JoinUrl = new Uri(
                 ThisAddIn.Instance.Settings.GreenlightUrl,
                 $"rooms/{room.FriendlyId}?viewerCode={_moderatorCode}"
